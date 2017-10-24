@@ -5,36 +5,75 @@ var Employee = require("./EmployeeCls");
 var Provider = require("./ProviderCls");
 var Flower = require("./FlowerCls");
 
-var db = {
-    idCounts :{},
-    entities : {}
-};
+var Database = (function () {
 
+    var idCounts;
+    var entities;
+    // all users are stored in one table
+    var usersEntities = ["Manager", "Employee", "Provider", "Customer"];
 
-db.getEntity = function(entityName,id) {
-    return this.entities[entityName][id];
-};
+    function Database() {
+        idCounts = {};
+        entities = {}
+    }
 
-db.addEntity = function(entityName, params){
-    if (! this.idCounts[entityName]) this.idCounts[entityName] = 0;
-    var id = ++this.idCounts[entityName];
-    params.unshift(id);
-    var entityCtor = eval(entityName);
-    var entity = Object.create(entityCtor.prototype);
-    entity.constructor.apply(entity, params);
-    if (! this.entities[entityName]) this.entities[entityName] = {};
-    this.entities[entityName][id] = entity;
-    return id;
-};
+    Database.prototype.getEntity = function(entityName,id) {
+        if (usersEntities.indexOf(entityName) > -1) entityName = "User";
+        var desiredEntity = entities[entityName][id];
+        if (!desiredEntity || !desiredEntity.isActive){
+            return undefined;
+        }
+        return desiredEntity;
+    };
 
-db.removeEntity = function(entityName, id) {
-    this.entities[entityName][id].isActive = false;
-};
+    Database.prototype.getEntities = function(entityName) {
+        if (usersEntities.indexOf(entityName) > -1) entityName = "User";
+        var desiredEntities = entities[entityName];
+        if (desiredEntities) {
+            var activeEntities = {};
+            Object.keys(desiredEntities).forEach(function (id) {
+                if (desiredEntities[id].isActive){
+                    activeEntities[id] = desiredEntities[id];
+                }
+            });
+            return activeEntities;
+        }
+        return undefined;
+    };
 
-db.updateEntity = function(entityName, id, entity) {
-    entity.id = id;
-    this.entities[entityName][id] = entity;
-};
+    Database.prototype.addEntity = function(entityName, params){
+        var entityCtor = eval(entityName);
+        if (usersEntities.indexOf(entityName) > -1) entityName = "User";
+        if (! idCounts[entityName]) idCounts[entityName] = 0;
+        var id = ++idCounts[entityName];
+        params.unshift(id);
+        var entity = Object.create(entityCtor.prototype);
+        entity.constructor.apply(entity, params);
+        if (! entities[entityName]) entities[entityName] = {};
+        entities[entityName][id] = entity;
+        return id;
+    };
+
+    Database.prototype.removeEntity = function(entityName, id) {
+        if (usersEntities.indexOf(entityName) > -1) entityName = "User";
+        if (entities[entityName] && entities[entityName][id]) {
+            entities[entityName][id].isActive = false;
+        }
+    };
+
+    Database.prototype.updateEntity = function(entityName, entity) {
+        if (usersEntities.indexOf(entityName) > -1) entityName = "User";
+        var id = entity.id;
+        if (entities[entityName] && entities[entityName][id]) {
+            entities[entityName][id] = entity;
+        }else {
+            throw "No such " + entityName + " with id: " + id;
+        }
+    };
+    return Database;
+})();
+
+var db = new Database();
 
 db.addEntity('Branch', ["Main Branch", "22 Hahagana, TLV"]);
 db.addEntity('Branch', ["Beney Berak", "33 Rabi Akiva, Beney Berak"]);
@@ -43,12 +82,10 @@ db.addEntity('Employee', ["e1", "e1","Bibi Netanyahoo","33 Rabi Akiva, Beney Ber
 db.addEntity('Employee', ["e2", "e2", "Buji Herzog","22 Hahagana, TLV",2]);
 db.addEntity('Customer', ["c1", "c1", "Yoni Weis","33 Rabi Akiva, Beney Berak"]);
 db.addEntity('Customer', ["c2", "c2", "Moishe Zuchmir" ,"33 Rabi Akiva, Beney Berak"]);
-db.addEntity('Flower', ["Hazav", "White", "./images/Hazav.jpg" ,22.90]);
+db.addEntity('Flower', ["Vered", "Pink", "./images/Vered.jpg" ,22.90]);
 db.addEntity('Flower', ["Kalanit", "Red", "./images/Calanit.jpg" ,12.90]);
 db.addEntity('Flower', ["Rakefet", "Purple", "./images/Rakefet.jpg" ,32.90]);
 db.addEntity('Flower', ["Hamanya", "Yellow", "./images/Hamanya.jpg" ,10.50]);
 db.addEntity('Flower', ["Gladyola", "White", "./images/Gladyola.jpg" ,15.00]);
-
-console.log(db.entities);
 
 module.exports = db;
