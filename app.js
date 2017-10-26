@@ -8,7 +8,6 @@ var session = require('express-session');
 var passport = require('passport');
 
 var index = require('./routes/index');
-var users = require('./routes/users');
 var login = require('./routes/login');
 
 var app = express();
@@ -30,13 +29,12 @@ app.use(passport.session());
 
 app.use('/', index);
 app.use('/login', login);
-app.use('/users', users);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  var err = new Error('Not Found');
-  err.status = 404;
-  next(err);
+    const err = new Error('Not Found');
+    err.status = 404;
+    next(err);
 });
 
 // error handler

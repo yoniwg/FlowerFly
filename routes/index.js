@@ -1,11 +1,12 @@
-var express = require('express');
-var router = express.Router();
-var db = require('../model/database');
+const express = require('express');
+const router = express.Router();
+const db = require('../model/database');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
+  let currentUser;
   if (req.session && req.session.passport) {
-      var currentUser = req.session.passport.user;
+        currentUser = req.session.passport.user;
   }
   res.render('index', { currentUser: currentUser, flowersDb: db.getEntities("Flower") });
 });

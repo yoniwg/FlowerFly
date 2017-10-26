@@ -30,15 +30,11 @@ var Database = (function () {
         if (usersEntities.indexOf(entityName) > -1) entityName = "User";
         var desiredEntities = entities[entityName];
         if (desiredEntities) {
-            var activeEntities = {};
-            Object.keys(desiredEntities).forEach(function (id) {
-                if (desiredEntities[id].isActive){
-                    activeEntities[id] = desiredEntities[id];
-                }
-            });
-            return activeEntities;
+            return Object.keys(desiredEntities)
+                .map(id => desiredEntities[id])
+                .filter(e => e.isActive);
         }
-        return undefined;
+        return [];
     };
 
     Database.prototype.addEntity = function(entityName, params){

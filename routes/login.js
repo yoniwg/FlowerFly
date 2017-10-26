@@ -7,14 +7,7 @@ var db = require('../model/database');
 passport.use('local-signin', new LocalStrategy(
     {passReqToCallback : true}, //allows us to pass back the request to the callback
     function(req, username, password, done) {
-        var users = db.getEntities("User");
-        var user;
-        for (var id in users){
-            var currentUser = users[id];
-            if (currentUser.username === username && currentUser.password === password){
-                user = currentUser;
-            }
-        }
+        let user = db.getEntities("User").find(u => u.username === username && u.password === password);
         if (user) {
             console.log("LOGGED IN AS: " + user.username);
             req.session.success = 'You are successfully logged in ' + user.username + '!';
@@ -53,7 +46,7 @@ router.post('/', passport.authenticate('local-signin', {
 
 //logs user out of site, deleting them from the session, and returns to homepage
 router.get('/logout', function(req, res){
-    var name = req.user.username;
+    const name = req.user.username;
     console.log("LOGGIN OUT " + name);
     req.logout();
     res.redirect('/');
