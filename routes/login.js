@@ -1,8 +1,8 @@
-var express = require('express');
-var router = express.Router();
-var passport = require('passport');
-var LocalStrategy = require('passport-local');
-var db = require('../model/database');
+const express = require('express');
+const router = express.Router();
+const passport = require('passport');
+const LocalStrategy = require('passport-local');
+const db = require('../model/database');
 
 passport.use('local-signin', new LocalStrategy(
     {passReqToCallback : true}, //allows us to pass back the request to the callback
@@ -45,7 +45,7 @@ router.post('/', passport.authenticate('local-signin', {
 );
 
 //logs user out of site, deleting them from the session, and returns to homepage
-router.get('/logout', function(req, res){
+router.get('/logout', function(req, res) {
     const name = req.user.username;
     console.log("LOGGIN OUT " + name);
     req.logout();
@@ -53,22 +53,4 @@ router.get('/logout', function(req, res){
     req.session.notice = "You have successfully been logged out " + name + "!";
 });
 
-
-// router.post('/', function(req, res, next) {
-//     var username = req.body.username;
-//     var password = req.body.password;
-//
-//     var users = db.getEntities("User");
-//     for (var id in users){
-//         var currentUser = users[id];
-//         if (currentUser.username === username && currentUser.password === password){
-//             res.app.locals.currentUser = currentUser;
-//         }
-//     }
-//     if (res.app.locals.currentUser){
-//         res.redirect('/');
-//     } else {
-//         res.render("login",{invalid:true});
-//     }
-// });
 module.exports = router;
