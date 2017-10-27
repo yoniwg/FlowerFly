@@ -11,7 +11,6 @@ footer {
 }
 
 .carousel-inner img {
-
   margin: auto;
   min-height:200px;
 }
@@ -21,4 +20,13 @@ footer {
   .carousel-caption {
     display: none;
   }
+}
+
+#invalidWarning {
+  color: red;
+}
+
+.padding-sides {
+  padding-left: 20px;
+  padding-right: 20px;
 }

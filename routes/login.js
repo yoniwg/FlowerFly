@@ -37,12 +37,29 @@ router.get('/', function(req, res, next) {
     res.render('login',{invalid: req.session.error});
 });
 
+//TODO not working for now (should use passport-remember-me)
+function handleRemeberMe(req, res, next) {
+    if (req.body.remember) {
+        req.session.cookie.maxAge = 30 * 24 * 60 * 60 * 1000; // Cookie expires after 30 days
+    } else {
+        req.session.cookie.expires = false; // Cookie expires at end of session
+    }
+    res.redirect('/');
+}
+
 //sends the request through our local login/signin strategy, and if successful takes user to homepage, otherwise returns then to signin page
-router.post('/', passport.authenticate('local-signin', {
-        successRedirect: '/',
-        failureRedirect: '/login'
-    })
-);
+router.post('/', function(req, res, next) {
+    passport.authenticate('local-signin', function(error, user, info) {
+        if(error) {
+            return res.status(500).json(error);
+        }
+        if(!user) {
+            return res.status(401).json(info.message);
+        }
+        res.json({userRole: user.role});
+    })(req, res, next);
+    next();
+}, handleRemeberMe);
 
 //logs user out of site, deleting them from the session, and returns to homepage
 router.get('/logout', function(req, res) {
@@ -53,4 +70,21 @@ router.get('/logout', function(req, res) {
     req.session.notice = "You have successfully been logged out " + name + "!";
 });
 
+router.get('/isLoggedIn',function (req, res, next) {
+    if (req.user) {
+        res.json({userRole: req.user.role});
+    }else {
+        res.json({})
+    }
+});
+
+function requireLoggedIn(req, res, next) {
+    if (req.user) {
+        next();
+    } else {
+        res.redirect('/login');
+    }
+}
+
+router.loggedIn = requireLoggedIn;
 module.exports = router;
