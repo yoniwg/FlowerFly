@@ -56,7 +56,10 @@ router.post('/', function(req, res, next) {
         if(!user) {
             return res.status(401).json(info.message);
         }
-        res.json({userRole: user.role});
+        req.logIn(user, function (err) {
+            if (err) { return next(err); }
+            return res.json({userRole: user.role});
+        });
     })(req, res, next);
 });
 

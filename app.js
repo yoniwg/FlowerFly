@@ -27,7 +27,6 @@ app.use(passport.session());
 
 var index = require('./routes/index');
 var login = require('./routes/login');
-var fs = require('fs');
 
 const messageSource = require('./i18n/i18n');
 
