@@ -7,10 +7,6 @@ var bodyParser = require('body-parser');
 var session = require('express-session');
 var passport = require('passport');
 
-var index = require('./routes/index');
-var login = require('./routes/login');
-var fs = require('fs');
-
 var app = express();
 var db = require('./model/database');
 
@@ -28,6 +24,10 @@ app.use(session({secret: 'supernova', saveUninitialized: true, resave: true}));
 app.use(passport.initialize());
 app.use(passport.session());
 
+
+var index = require('./routes/index');
+var login = require('./routes/login');
+var fs = require('fs');
 
 const messageSource = require('./i18n/i18n');
 

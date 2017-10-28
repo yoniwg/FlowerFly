@@ -34,7 +34,7 @@ passport.deserializeUser(function(obj, done) {
 
 /* GET login page. */
 router.get('/', function(req, res, next) {
-    res.render('login',{invalid: req.session.error});
+    res.render('login');
 });
 
 //TODO not working for now (should use passport-remember-me)
@@ -58,8 +58,7 @@ router.post('/', function(req, res, next) {
         }
         res.json({userRole: user.role});
     })(req, res, next);
-    next();
-}, handleRemeberMe);
+});
 
 //logs user out of site, deleting them from the session, and returns to homepage
 router.get('/logout', function(req, res) {
