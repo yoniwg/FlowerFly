@@ -1,4 +1,14 @@
-var Entity = require("./EntityCls");
+const Entity = require("./EntityCls");
+
+/**
+ *
+ * @param id
+ * @param name
+ * @param color
+ * @param imageUrl
+ * @param {number} price
+ * @constructor
+ */
 function Flower(id, name, color, imageUrl, price) {
     Entity.call(this,id);
     Object.defineProperties(this,{

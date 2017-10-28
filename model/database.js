@@ -1,34 +1,47 @@
-var Branch = require("./BranchCls");
-var Customer = require("./CustomerCls");
-var Manager = require("./ManagerCls");
-var Employee = require("./EmployeeCls");
-var Provider = require("./ProviderCls");
-var Flower = require("./FlowerCls");
+const Branch = require("./BranchCls");
+const Customer = require("./CustomerCls");
+const Manager = require("./ManagerCls");
+const Employee = require("./EmployeeCls");
+const Provider = require("./ProviderCls");
+const Flower = require("./FlowerCls");
 
-var Database = (function () {
+// all users are stored in one table
+const usersEntities = ["Manager", "Employee", "Provider", "Customer"];
 
-    var idCounts;
-    var entities;
-    // all users are stored in one table
-    var usersEntities = ["Manager", "Employee", "Provider", "Customer"];
+/**
+ * TODO: Document the way it deals with super/sub-types (from the interface perspective).
+ */
+class Database {
 
-    function Database() {
-        idCounts = {};
-        entities = {}
+    constructor () {
+        this.idCounts = {};
+        this.entities = {};
     }
 
-    Database.prototype.getEntity = function(entityName,id) {
+    get entityNames() {
+        return Object.keys(this.entities);
+    }
+
+    /**
+     * Get an entity by id.
+     * @param {string} entityName
+     * @param {number} id
+     * @returns {undefined}
+     */
+    getEntity(entityName, id) {
         if (usersEntities.indexOf(entityName) > -1) entityName = "User";
-        var desiredEntity = entities[entityName][id];
-        if (!desiredEntity || !desiredEntity.isActive){
-            return undefined;
-        }
-        return desiredEntity;
+        const desiredEntity = this.entities[entityName][id];
+        return desiredEntity && desiredEntity.isActive ? desiredEntity : undefined;
     };
 
-    Database.prototype.getEntities = function(entityName) {
+    /**
+     * Get all entities of a specific type.
+     * @param {string} entityName the type name of the entity.
+     * @returns {Array} array of all entities f the given type.
+     */
+    getEntities(entityName) {
         if (usersEntities.indexOf(entityName) > -1) entityName = "User";
-        var desiredEntities = entities[entityName];
+        const desiredEntities = this.entities[entityName];
         if (desiredEntities) {
             return Object.keys(desiredEntities)
                 .map(id => desiredEntities[id])
@@ -37,39 +50,55 @@ var Database = (function () {
         return [];
     };
 
-    Database.prototype.addEntity = function(entityName, params){
-        var entityCtor = eval(entityName);
+    /**
+     * Add an entity to this database.
+     * @param {string} entityName The name of the entity type.
+     * @param params
+     * @returns {number} the id
+     */
+    addEntity(entityName, params) {
+        const entityCtor = eval(entityName);
         if (usersEntities.indexOf(entityName) > -1) entityName = "User";
-        if (! idCounts[entityName]) idCounts[entityName] = 0;
-        var id = ++idCounts[entityName];
+        if (!this.idCounts[entityName]) this.idCounts[entityName] = 0;
+        const id = ++this.idCounts[entityName];
         params.unshift(id);
-        var entity = Object.create(entityCtor.prototype);
+        const entity = Object.create(entityCtor.prototype);
         entity.constructor.apply(entity, params);
-        if (! entities[entityName]) entities[entityName] = {};
-        entities[entityName][id] = entity;
+        if (!this.entities[entityName]) this.entities[entityName] = {};
+        this.entities[entityName][id] = entity;
         return id;
     };
 
-    Database.prototype.removeEntity = function(entityName, id) {
+    /**
+     * Remove an entity from this database.
+     * @param {string} entityName
+     * @param id The entity id.
+     */
+    removeEntity(entityName, id) {
         if (usersEntities.indexOf(entityName) > -1) entityName = "User";
-        if (entities[entityName] && entities[entityName][id]) {
-            entities[entityName][id].isActive = false;
+        if (this.entities[entityName] && this.entities[entityName][id]) {
+            this.entities[entityName][id].isActive = false;
         }
     };
 
-    Database.prototype.updateEntity = function(entityName, entity) {
+    /**
+     *
+     * @param {string} entityName
+     * @param entity
+     */
+    updateEntity(entityName, entity) {
         if (usersEntities.indexOf(entityName) > -1) entityName = "User";
-        var id = entity.id;
-        if (entities[entityName] && entities[entityName][id]) {
-            entities[entityName][id] = entity;
-        }else {
+        const id = entity.id;
+        if (this.entities[entityName] && this.entities[entityName][id]) {
+            this.entities[entityName][id] = entity;
+        } else {
             throw "No such " + entityName + " with id: " + id;
         }
     };
-    return Database;
-})();
 
-var db = new Database();
+}
+
+const db = new Database();
 
 db.addEntity('Branch', ["Main Branch", "22 Hahagana, TLV"]);
 db.addEntity('Branch', ["Beney Berak", "33 Rabi Akiva, Beney Berak"]);

@@ -9,6 +9,7 @@ var passport = require('passport');
 
 var index = require('./routes/index');
 var login = require('./routes/login');
+var fs = require('fs');
 
 var app = express();
 var db = require('./model/database');
@@ -27,8 +28,19 @@ app.use(session({secret: 'supernova', saveUninitialized: true, resave: true}));
 app.use(passport.initialize());
 app.use(passport.session());
 
+
+const messageSource = require('./i18n/i18n');
+
+// add locals variables for all pages
+app.use((req, res, next) => {
+    const currentUser = req.session && req.session.passport ? req.session.passport.user : undefined;
+    res.locals = {msg: messageSource, currentUser: currentUser, db: db};
+    next();
+});
+
 app.use('/', index);
 app.use('/login', login);
+app.use('/header-footer', (req,res) => res.render('partials/header-footer'));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
