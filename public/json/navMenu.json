@@ -1,8 +1,8 @@
 [
-  {"title": "Home", "msgId": "home", "link": "/"},
+  {"title": "Home", "msgId": "home", "link": "/", "accessAll" : true},
   {"title": "Flowers Catalog", "msgId": "flowers_catalog", "link": "/flowers", "loggedInOnly": true},
-  {"title": "Users Management", "msgId": "users_management", "link": "/users", "loggedInOnly": true},
-  {"title": "Branches Management", "msgId": "branches_management", "link": "/branches", "loggedInOnly": true, "managerOnly": true},
-  {"title": "About Company", "msgId": "about_company", "link": "/about"},
-  {"title": "Contact", "msgId": "contact", "link": "/contact"}
+  {"title": "Users Management", "msgId": "users_management", "link": "/users", "managerOnly" : true, "employeeOnly": true},
+  {"title": "Branches Management", "msgId": "branches_management", "link": "/branches", "managerOnly": true},
+  {"title": "About Company", "msgId": "about_company", "link": "/about", "accessAll" : true},
+  {"title": "Contact", "msgId": "contact", "link": "/contact", "accessAll" : true}
 ]

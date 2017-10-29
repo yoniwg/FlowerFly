@@ -18,13 +18,21 @@ class ViewState {
 
     get isManager() { return this.role === 'Manager'; };
 
+    get isEmployee() { return this.role === 'Employee'; };
+
     get menu() {
         return menuJson.map(item => {
-            item.shown = (this.loggedIn || !item.loggedInOnly) && (this.isManager || !item.managerOnly);
+            item.shown = this.filterAccess(item);
             return item
         });
     }
 
+    filterAccess(item) {
+        return (item.managerOnly && this.isManager)
+                || (item.employeeOnly && this.isEmployee)
+                || (item.loggedInOnly && this.loggedIn)
+            || (item.accessAll);
+    }
 }
 
 function getCurrentLink() { return window.location.pathname; }
