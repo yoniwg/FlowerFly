@@ -27,6 +27,7 @@ app.use(passport.session());
 
 var index = require('./routes/index');
 var login = require('./routes/login');
+var partials = require('./routes/partials');
 
 const messageSource = require('./i18n/i18n');
 
@@ -38,7 +39,10 @@ app.use((req, res, next) => {
 });
 
 app.use('/', index);
+
+
 app.use('/login', login);
+app.use('/partials', partials);
 app.use('/header-footer', (req,res) => res.render('partials/header-footer'));
 
 // catch 404 and forward to error handler
