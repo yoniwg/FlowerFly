@@ -102,15 +102,16 @@ class Database {
 
 const db = new Database();
 
-db.entitiesTypes = {
+db.entityCtorMap = {
     Branch : Branch,
     Customer : Customer,
     Manager : Manager,
     Employee : Employee,
     Provider : Provider,
-    Flower : Flower,
-    usersEntities : usersEntities
+    Flower : Flower
 };
+
+db.userEntityCtors = usersEntities.map(entityName => db.entityCtorMap[entityName]);
 
 db.addEntity('Branch', ["Main Branch", "22 Hahagana, TLV"]);
 db.addEntity('Branch', ["Beney Berak", "33 Rabi Akiva, Beney Berak"]);

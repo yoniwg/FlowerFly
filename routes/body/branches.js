@@ -1,6 +1,6 @@
-const db = require('../model/database');
+const db = require('../../model/database');
 
-const branchesProps = Object.keys(new db.entitiesTypes.Branch());
+const branchesProps = Object.keys(new db.entityCtorMap.Branch());
 
 function mw(req, res, next) {
     let branches = db.getEntities("Branch");

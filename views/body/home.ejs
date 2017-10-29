@@ -1,27 +1,26 @@
 <div id="myCarousel" class="carousel slide" data-ride="carousel">
     <!-- Indicators -->
+    <%
+    function activeClass(i) {
+        return i==0?'active ':'';
+    }
+    %>
     <ol class="carousel-indicators">
-        <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
-        <li data-target="#myCarousel" data-slide-to="1"></li>
+        <% db.getEntities('Flower').forEach((_,i) => {
+         %><li data-target="#myCarousel" data-slide-to="<%=i%>" class="<%=activeClass(i)%>"></li><%
+        })%>
     </ol>
-
     <!-- Wrapper for slides -->
     <div class="carousel-inner" role="listbox">
-        <div class="item active">
-            <img src="<%=flowersDb[2].imageUrl%>" alt="Image">
-            <div class="carousel-caption">
-                <h3><%=flowersDb[2].price.toFixed(2)%> $</h3>
-                <p><%=flowersDb[2].name%></p>
-            </div>
-        </div>
-
-        <div class="item">
-            <img src="<%=flowersDb[1].imageUrl%>" alt="Image">
-            <div class="carousel-caption">
-                <h3><%=flowersDb[1].price.toFixed(2)%> $</h3>
-                <p><%=flowersDb[1].name%></p>
-            </div>
-        </div>
+        <% db.getEntities('Flower').forEach((flower,i) => {
+            %><div class="<%='item ' + activeClass(i)%>">
+                <img src="<%=flower.imageUrl%>" alt="Image">
+                <div class="carousel-caption">
+                    <h3><%=flower.price.toFixed(2)%> $</h3>
+                    <p><%=flower.name%></p>
+                </div>
+            </div><%
+        })%>
     </div>
 
     <!-- Left and right controls -->

@@ -8,16 +8,19 @@ const navLinks = JSON.parse(fs.readFileSync('public/json/navMenu.json')).map(ite
 
 
 navLinks.forEach(link => {
+
+    // get the view for ./{page-name}, for example ./users
+    router.get(link, (req, res, next) => res.render('index'));
+
+    // get the main body for ./body/{page-name}, for exampele ./body/users
     const bodyPath = '/body' + link;
-    const middlewareName = link === '/' ? 'home' : link.substr(1);
+    const middlewareName = 'body' + (link === '/' ? '/home' : link);
     let middleware;
     try{
         middleware = require("./" + middlewareName);
     }catch (e){ //TODO remove after creating all middlewares
-        middleware = ()=>{};
+        throw e;//middleware = ()=>{};
     }
-
-    router.get(link, (req, res, next) => res.render('index'));
     router.get(bodyPath, middleware);
 });
 

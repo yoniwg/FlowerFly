@@ -39,7 +39,7 @@ function getCurrentLink() { return window.location.pathname; }
 
 function itemIsActive(item) { return getCurrentLink() === item.link }
 
-const viewModel = new ViewState();
+const viewState = new ViewState();
 
 function onNavigationClick(link) {
     window.history.pushState("","",link);
@@ -52,12 +52,12 @@ function refreshBody() {
         type: "GET",
         url: "./body" + getCurrentLink(),
         success: (res) => $('#main-body-container').html(res),
-        error: function (err) { $('#main-body-container').text("Error code " + err.status + ". Sorry!") }
+        error: err => { $('#main-body-container').html(err.responseText) }
     });
 }
 
 function refreshNavigationBar() {
-    if (viewModel.loggedIn) {
+    if (viewState.loggedIn) {
         $("#loginLi").hide();
         $("#logoutLi").show();
     } else {
@@ -65,7 +65,7 @@ function refreshNavigationBar() {
         $("#logoutLi").hide();
     }
 
-    $('#nav-bar-menu').html( viewModel.menu
+    $('#nav-bar-menu').html( viewState.menu
         .filter(item => item.shown)
         .map(item => {
             return '<li class=' + (itemIsActive(item)?"active":"") + '><a href="' + item.link + '" onclick="onNavigationClick(\'' + item.link + '\'); return false;">' + item.title + '</a></li>\n';
@@ -78,12 +78,12 @@ $.ajax({
     type: "GET",
     url: "./login/isLoggedIn",
     success: function (res) {
-        viewModel.role = res.userRole;
+        viewState.role = res.userRole;
         refreshNavigationBar();
         refreshBody();
     },
     error: function (err) {
-        viewModel.role = undefined;
+        viewState.role = undefined;
         refreshNavigationBar();
         refreshBody();
     }
@@ -100,7 +100,7 @@ $("#loginForm").submit(function(e) {
         success: function(data)
         {
             $('#loginModal').modal('toggle');
-            viewModel.role = data.userRole;
+            viewState.role = data.userRole;
             refreshNavigationBar();
         },
         error: function(data)

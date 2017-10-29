@@ -11,7 +11,7 @@
 </head>
 <body>
 
-<nav class="navbar navbar-inverse">
+<nav class="navbar navbar-inverse navbar-fixed-top">
     <div class="container-fluid">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
@@ -28,16 +28,15 @@
             <ul class="nav navbar-nav navbar-right">
                 <li id="logoutLi"><a href="./login/logout"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
                 <li id="loginLi"><a data-toggle="modal" data-target="#loginModal"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
-                <% include login.ejs %>
             </ul>
         </div>
     </div>
 </nav>
 <div id="main-body-container"></div>
-<footer class="container-fluid text-center">
-    <p>Footer Text</p>
+<footer class="container-fluid text-center navbar-fixed-bottom">
+    <p>Flower-Fly ©</p>
 </footer>
-
+<% include login.ejs %>
 </body>
 <script src="/javascripts/menuObj.js"></script>
 <script src="/javascripts/index.js"></script>

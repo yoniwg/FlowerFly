@@ -1,6 +1,6 @@
-const db = require('../model/database');
+const db = require('../../model/database');
 
-const flowersProps = Object.keys(new db.entitiesTypes.Flower());
+const flowersProps = Object.keys(new db.entityCtorMap.Flower());
 
 function mw(req, res, next) {
     let flowers = db.getEntities("Flower");

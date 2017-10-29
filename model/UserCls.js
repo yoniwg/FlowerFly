@@ -1,4 +1,5 @@
-var Entity = require("./EntityCls");
+const Entity = require("./EntityCls");
+
 function User(id, username, password, role, fullName, address) {
     Entity.call(this,id);
     Object.defineProperties(this,{
