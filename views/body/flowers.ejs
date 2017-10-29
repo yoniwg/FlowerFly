@@ -1,0 +1,25 @@
+<div>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <% flowersProps.forEach(prop => {%>
+                <th><%=prop%></th>
+                <% });%>
+            </tr>
+        </thead>
+        <tbody>
+            <% flowers.forEach(flower => {%>
+            <tr>
+                <%flowersProps.forEach(prop => {%>
+                <% if (prop === "imageUrl"){%>
+                <td> <img src="<%=flower[prop]%>" height="40em" width="40em"></td>
+                <% } else if (prop === "price"){%>
+                <td><%=flower[prop].toFixed(2)%> $</td>
+                <% } else {%>
+                <td><%=(flower[prop]) ? flower[prop] : " - "%></td>
+                <%}});%>
+            </tr>
+            <% });%>
+        </tbody>
+    </table>
+</div>

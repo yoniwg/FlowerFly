@@ -31,7 +31,9 @@ class Database {
     getEntity(entityName, id) {
         if (usersEntities.indexOf(entityName) > -1) entityName = "User";
         const desiredEntity = this.entities[entityName][id];
-        return desiredEntity && desiredEntity.isActive ? desiredEntity : undefined;
+        return desiredEntity && desiredEntity.isActive
+            ? JSON.parse(JSON.stringify(desiredEntity))
+            : undefined;
     };
 
     /**
@@ -44,8 +46,8 @@ class Database {
         const desiredEntities = this.entities[entityName];
         if (desiredEntities) {
             return Object.keys(desiredEntities)
-                .map(id => desiredEntities[id])
-                .filter(e => e.isActive);
+                .filter(id => desiredEntities[id].isActive)
+                .map(id => JSON.parse(JSON.stringify(desiredEntities[id])));
         }
         return [];
     };
@@ -99,6 +101,16 @@ class Database {
 }
 
 const db = new Database();
+
+db.entitiesTypes = {
+    Branch : Branch,
+    Customer : Customer,
+    Manager : Manager,
+    Employee : Employee,
+    Provider : Provider,
+    Flower : Flower,
+    usersEntities : usersEntities
+};
 
 db.addEntity('Branch', ["Main Branch", "22 Hahagana, TLV"]);
 db.addEntity('Branch', ["Beney Berak", "33 Rabi Akiva, Beney Berak"]);

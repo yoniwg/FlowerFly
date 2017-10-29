@@ -1,0 +1,20 @@
+<div>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <% usersProps.forEach(prop => {%>
+                <th><%=prop%></th>
+                <% });%>
+            </tr>
+        </thead>
+        <tbody>
+            <% users.forEach(user => {%>
+            <tr>
+                <%usersProps.forEach(prop => {%>
+                <td><%=(user[prop]) ? user[prop] : " - "%></td>
+                <%});%>
+            </tr>
+            <% });%>
+        </tbody>
+    </table>
+</div>

@@ -31,12 +31,12 @@ var partials = require('./routes/partials');
 
 const messageSource = require('./i18n/i18n');
 
-// add locals variables for all pages
-app.use((req, res, next) => {
-    const currentUser = req.session && req.session.passport ? req.session.passport.user : undefined;
-    res.locals = {msg: messageSource, currentUser: currentUser, db: db};
-    next();
-});
+// // add locals variables for all pages
+// app.use((req, res, next) => {
+//     const currentUser = req.session && req.session.passport ? req.session.passport.user : undefined;
+//     res.locals = {msg: messageSource, currentUser: currentUser, db: db};
+//     next();
+// });
 
 app.use('/', index);
 

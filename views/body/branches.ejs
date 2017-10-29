@@ -1,0 +1,20 @@
+<div>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <% branchesProps.forEach(prop => {%>
+                <th><%=prop%></th>
+                <% });%>
+            </tr>
+        </thead>
+        <tbody>
+            <% branches.forEach(branch => {%>
+            <tr>
+                <%branchesProps.forEach(prop => {%>
+                <td><%=(branch[prop]) ? branch[prop] : " - "%></td>
+                <%});%>
+            </tr>
+            <% });%>
+        </tbody>
+    </table>
+</div>
