@@ -54,6 +54,11 @@ function refreshBody() {
         success: (res) => $('#main-body-container').html(res),
         error: err => { $('#main-body-container').html(err.responseText) }
     });
+    let addUserComp = $("#addUserComp");
+    addUserComp.hide();
+    if (getCurrentLink() === "/users" && viewModel.isManager){
+        addUserComp.show();
+    }
 }
 
 function refreshNavigationBar() {
