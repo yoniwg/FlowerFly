@@ -76,7 +76,7 @@ class Database {
      * @param {string} entityName
      * @param id The entity id.
      */
-    removeEntity(entityName, id) {
+    deleteEntity(entityName, id) {
         if (usersEntities.indexOf(entityName) > -1) entityName = "User";
         if (this.entities[entityName] && this.entities[entityName][id]) {
             this.entities[entityName][id].isActive = false;

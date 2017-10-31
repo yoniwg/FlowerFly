@@ -24,7 +24,7 @@ function mw(req, res, next) {
             props = allUsersProps;
             editable = true;
             break;
-        default : return next(new Error("a " + userRole + " is not allowed to see users' details."))
+        default : next(new Error("a " + userRole + " is not allowed to see users' details."))
     }
 
     res.render('body/users', { props: props, users: users, editable: editable });
