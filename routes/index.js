@@ -7,6 +7,8 @@ const fs = require('fs');
 const navLinks = JSON.parse(fs.readFileSync('public/json/navMenu.json')).map(item => item.link);
 
 
+router.get('/', (req,res,next) => res.redirect('/about'));
+
 navLinks.forEach(link => {
 
     // get the view for ./{page-name}, for example ./users
@@ -14,7 +16,8 @@ navLinks.forEach(link => {
 
     // get the main body for ./body/{page-name}, for exampele ./body/users
     const bodyPath = '/body' + link;
-    const middlewareName = 'body' + (link === '/' ? '/home' : link);
+    const homePageLink = 'about';
+    const middlewareName = 'body' + (link === '/' ? '/' + homePageLink : link);
     let middleware;
     try{
         middleware = require("./" + middlewareName);
