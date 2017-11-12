@@ -7,6 +7,10 @@ function wrapJson(json) {
 }
 
 
+///////////////////
+// DELETE
+///////////////////
+
 router.delete('/:entity/:id', (req, res, next) => {
     const id = req.params.id;
     const entity = req.params.entity;
@@ -17,6 +21,10 @@ router.delete('/:entity/:id', (req, res, next) => {
 });
 
 
+
+///////////////////
+// GET ALL USERS
+///////////////////
 
 const allUsersProps = Array.from(
     db.userEntityCtors
@@ -51,6 +59,12 @@ router.get('/User/all', (req,res,next) => {
     res.status(201).json({items: users, props: props, editable: editable});
 });
 
+
+
+///////////////////
+// GET ALL
+///////////////////
+
 router.get('/:entity/all', (req,res,next) => {
     const entity = req.params.entity;
 
@@ -60,13 +74,43 @@ router.get('/:entity/all', (req,res,next) => {
 });
 
 
+
+///////////////////
+// GET BY ID
+///////////////////
+
 router.get('/:entity/:id', (req,res,next) => {
     const id = req.params.id;
     const entity = req.params.entity;
 
-    const item = db.getEntity(entity,id);
+    const item = db.getEntity(entity, id);
+    if (item) {
+        res.status(201).json({item: item});
+    } else {
+        const message = "No entity of type '" + entity + "' with id " + id + " was found.";
+        const code = 422;
+        res.status(code).json({error:{ code: code, message: message}});
+    }
+});
 
-    res.status(201).json({item: item});
+
+///////////////////
+// CREATE
+///////////////////
+
+router.post('/:entity', (req,res,next) => {
+    throw Error('not implemented')
+});
+
+
+///////////////////
+// UPDATE
+///////////////////
+
+router.put('/:entity/:id', (req,res,next) => {
+    throw Error('not implemented')
 });
 
 module.exports = router;
+
+

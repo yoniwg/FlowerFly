@@ -30,7 +30,9 @@ class Database {
      */
     getEntity(entityName, id) {
         if (usersEntities.indexOf(entityName) > -1) entityName = "User";
-        const desiredEntity = this.entities[entityName][id];
+        const entitiesOfName = this.entities[entityName];
+        if (!entitiesOfName) return undefined;
+        const desiredEntity = entitiesOfName[id];
         return desiredEntity && desiredEntity.isActive
             ? JSON.parse(JSON.stringify(desiredEntity))
             : undefined;
