@@ -51,7 +51,7 @@ function nameFromField(text) {
 }
 
 function showEditModal(user) {
-    const id = user ? user.id : 0;
+    const id = user ? user._id : 0;
 
     // set title and button text
     let actionName = id === 0 ? 'Add' : 'Update';
@@ -99,15 +99,15 @@ function showUsers(users, props, editable) {
 
     let trs = '';
     users.forEach(user => {
-        const id = user.id;
+        const id = user._id;
         trs += '<tr>';
         trs  += ('<td><input type="checkbox" class="checkthis"></td>');
         props.forEach(field => {
             trs  += ('<td>' + userfieldToString(user, field)  + '</td>');
         });
         if (editable) {
-            trs  += ('<td><p data-placement="top" data-toggle="tooltip" title="" data-original-title="Edit"><button class="btn btn-primary btn-xs" data-title="Edit" data-toggle="modal" data-target="#detailsModal" onclick="onOpenDetailsModal('+id+')"><span class="glyphicon glyphicon-pencil"></span></button></p></td>');
-            trs  += ('<td><p data-placement="top" data-toggle="tooltip" title="" data-original-title="Delete"><button class="btn btn-danger btn-xs" data-title="Delete" data-toggle="modal" data-target="#delete" onclick="onSelectId('+id+')"><span class="glyphicon glyphicon-trash"></span></button></p></td>');
+            trs  += ('<td><p data-placement="top" data-toggle="tooltip" title="" data-original-title="Edit"><button class="btn btn-primary btn-xs" data-title="Edit" data-toggle="modal" data-target="#detailsModal" onclick="onOpenDetailsModal(\''+id+'\')"><span class="glyphicon glyphicon-pencil"></span></button></p></td>');
+            trs  += ('<td><p data-placement="top" data-toggle="tooltip" title="" data-original-title="Delete"><button class="btn btn-danger btn-xs" data-title="Delete" data-toggle="modal" data-target="#delete" onclick="onSelectId(\''+id+'\')"><span class="glyphicon glyphicon-trash"></span></button></p></td>');
         }
         trs += '/<tr>';
     });

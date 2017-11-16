@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../model/database');
 const fs = require('fs');
 
 
@@ -19,11 +18,7 @@ navLinks.forEach(link => {
     const homePageLink = 'about';
     const middlewareName = 'body' + (link === '/' ? '/' + homePageLink : link);
     let middleware;
-    try{
-        middleware = require("./" + middlewareName);
-    }catch (e){ //TODO remove after creating all middlewares
-        throw e;//middleware = ()=>{};
-    }
+    middleware = require("./" + middlewareName);
     router.get(bodyPath, middleware);
 });
 

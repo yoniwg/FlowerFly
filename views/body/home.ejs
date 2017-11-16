@@ -6,13 +6,13 @@
     }
     %>
     <ol class="carousel-indicators">
-        <% db.getEntities('Flower').forEach((_,i) => {
+        <%flowers.forEach((flower,i)=>{
          %><li data-target="#myCarousel" data-slide-to="<%=i%>" class="<%=activeClass(i)%>"></li><%
         })%>
     </ol>
     <!-- Wrapper for slides -->
     <div class="carousel-inner" role="listbox">
-        <% db.getEntities('Flower').forEach((flower,i) => {
+        <%flowers.forEach((flower,i)=>{
             %><div class="<%='item ' + activeClass(i)%>">
                 <img src="<%=flower.imageUrl%>" alt="Image">
                 <div class="carousel-caption">

@@ -17,6 +17,7 @@
     "passport-local": "latest",
     "serve-favicon": "~2.4.5",
     "cookie-session": "latest",
-    "bootstrap-material-design": "4.0.2"
+    "bootstrap-material-design": "4.0.2",
+    "mongoose": "latest"
   }
 }

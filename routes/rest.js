@@ -15,9 +15,15 @@ router.delete('/:entity/:id', (req, res, next) => {
     const id = req.params.id;
     const entity = req.params.entity;
 
-    db.deleteEntity(entity, id);
+    db.deleteEntity(entity, id).then(err=> {
+            if (!err) {
+                res.status(201).json({});
+            }else {
+                // TODO handle error
+            }
+        }
+    );
 
-    res.status(201).json({});
 });
 
 
@@ -26,37 +32,39 @@ router.delete('/:entity/:id', (req, res, next) => {
 // GET ALL USERS
 ///////////////////
 
-const allUsersProps = Array.from(
-    db.userEntityCtors
-        .reduce((props, entityCtor) => new Set([...props, ...Object.keys(new entityCtor())]), new Set())
-);
-const customerProps = Object.keys(new db.entityCtorMap.Customer());
+const usersProps = Object.keys(require('../model/UserSchema').obj).filter(p=>p !== "isActive");
+const customerProps = usersProps.filter(p=> p !== "branchId" && p !== "flowersIds");
+
 router.get('/User/all', (req,res,next) => {
     const id = req.params.id;
 
-    let users = db.getEntities("User");
-    let props;
-    let editable = false;
+    db.getEntities("User").then(users=> {
+        let userRole;
+        let props;
+        let editable = false;
+        if (req.user) {
+           userRole = req.user.role;
+        }
+        switch (userRole) {
+            case "Employee":
+                users = users
+                    .filter(u => u.role === "Customer")
+                    .map(u => {
+                        u.password = "*****";
+                        return u;
+                    });
+                props = customerProps;
+                break;
+            case "Manager":
+                props = usersProps;
+                editable = true;
+                break;
+            default :
+                next(new Error("a " + userRole + " is not allowed to see users' details."))
+        }
 
-    const userRole = req.user.role;
-    switch (userRole){
-        case "Employee":
-            users = users
-                .filter(u => u.role === "Customer")
-                .map(u => {
-                    u.password = "*****";
-                    return u;
-                });
-            props = customerProps;
-            break;
-        case "Manager":
-            props = allUsersProps;
-            editable = true;
-            break;
-        default : next(new Error("a " + userRole + " is not allowed to see users' details."))
-    }
-
-    res.status(201).json({items: users, props: props, editable: editable});
+        res.status(201).json({items: users, props: props, editable: editable});
+    });
 });
 
 
@@ -68,9 +76,9 @@ router.get('/User/all', (req,res,next) => {
 router.get('/:entity/all', (req,res,next) => {
     const entity = req.params.entity;
 
-    const items = db.getEntities(entity);
-
-    res.status(201).json({items: items});
+    db.getEntities(entity).then(items => {
+        res.status(201).json({items: items});
+    });
 });
 
 
@@ -83,14 +91,15 @@ router.get('/:entity/:id', (req,res,next) => {
     const id = req.params.id;
     const entity = req.params.entity;
 
-    const item = db.getEntity(entity, id);
-    if (item) {
-        res.status(201).json({item: item});
-    } else {
-        const message = "No entity of type '" + entity + "' with id " + id + " was found.";
-        const code = 422;
-        res.status(code).json({error:{ code: code, message: message}});
-    }
+    db.getEntity(entity, id).then(item=> {
+        if (item) {
+            res.status(201).json({item: item});
+        } else {
+            const message = "No entity of type '" + entity + "' with id " + id + " was found.";
+            const code = 422;
+            res.status(code).json({error: {code: code, message: message}});
+        }
+    });
 });
 
 

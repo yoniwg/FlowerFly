@@ -1,25 +1,29 @@
-const Branch = require("./BranchCls");
-const Customer = require("./CustomerCls");
-const Manager = require("./ManagerCls");
-const Employee = require("./EmployeeCls");
-const Provider = require("./ProviderCls");
-const Flower = require("./FlowerCls");
+const mongoose = require("mongoose");
 
-// all users are stored in one table
-const usersEntities = ["Manager", "Employee", "Provider", "Customer"];
+const BranchSchema = require("../model/BranchSchema");
+const UserSchema = require("../model/UserSchema");
+const FlowerSchema = require("../model/FlowerSchema");
 
+const mongoDbUrl = "mongodb://flowerfly:hgyw1234@flowerfly-shard-00-00-ifale.mongodb.net:27017," +
+    "flowerfly-shard-00-01-ifale.mongodb.net:27017," +
+    "flowerfly-shard-00-02-ifale.mongodb.net:27017/test?ssl=true&replicaSet=flowerfly-shard-0&authSource=admin";
 /**
  * TODO: Document the way it deals with super/sub-types (from the interface perspective).
  */
+mongoose.Promise = global.Promise;
 class Database {
 
-    constructor () {
-        this.idCounts = {};
-        this.entities = {};
+    constructor (dbName) {
+        this.mongoDb = mongoose.createConnection(mongoDbUrl);
+        this.entityCtorMap = {
+            Branch :    this.mongoDb.model('Branch',BranchSchema),
+            User :      this.mongoDb.model('User',  UserSchema),
+            Flower :    this.mongoDb.model('Flower',FlowerSchema)
+        };
     }
 
     get entityNames() {
-        return Object.keys(this.entities);
+        return Object.keys(this.entityCtorMap); //TODO change to string
     }
 
     /**
@@ -29,13 +33,7 @@ class Database {
      * @returns {undefined}
      */
     getEntity(entityName, id) {
-        if (usersEntities.indexOf(entityName) > -1) entityName = "User";
-        const entitiesOfName = this.entities[entityName];
-        if (!entitiesOfName) return undefined;
-        const desiredEntity = entitiesOfName[id];
-        return desiredEntity && desiredEntity.isActive
-            ? JSON.parse(JSON.stringify(desiredEntity))
-            : undefined;
+        return this.mongoDb.model(entityName).findOne({_id : id, isActive: true})
     };
 
     /**
@@ -44,33 +42,20 @@ class Database {
      * @returns {Array} array of all entities f the given type.
      */
     getEntities(entityName) {
-        if (usersEntities.indexOf(entityName) > -1) entityName = "User";
-        const desiredEntities = this.entities[entityName];
-        if (desiredEntities) {
-            return Object.keys(desiredEntities)
-                .filter(id => desiredEntities[id].isActive)
-                .map(id => JSON.parse(JSON.stringify(desiredEntities[id])));
-        }
-        return [];
+        return this.mongoDb.model(entityName).find({isActive: true})
     };
 
     /**
      * Add an entity to this database.
      * @param {string} entityName The name of the entity type.
      * @param params
-     * @returns {number} the id
+     * @returns {Promise}
      */
     addEntity(entityName, params) {
-        const entityCtor = eval(entityName);
-        if (usersEntities.indexOf(entityName) > -1) entityName = "User";
-        if (!this.idCounts[entityName]) this.idCounts[entityName] = 0;
-        const id = ++this.idCounts[entityName];
-        params.unshift(id);
-        const entity = Object.create(entityCtor.prototype);
-        entity.constructor.apply(entity, params);
-        if (!this.entities[entityName]) this.entities[entityName] = {};
-        this.entities[entityName][id] = entity;
-        return id;
+        const entityCtor = this.mongoDb.model(entityName);
+        params.isActive = true;
+        const entity = new entityCtor(params);
+        return entity.save();
     };
 
     /**
@@ -79,10 +64,12 @@ class Database {
      * @param id The entity id.
      */
     deleteEntity(entityName, id) {
-        if (usersEntities.indexOf(entityName) > -1) entityName = "User";
-        if (this.entities[entityName] && this.entities[entityName][id]) {
-            this.entities[entityName][id].isActive = false;
-        }
+        return this.getEntity(entityName,id).then(function (entity) {
+            if (entity) {
+                entity.isActive = false;
+                return entity.save();
+            }
+        });
     };
 
     /**
@@ -91,41 +78,38 @@ class Database {
      * @param entity
      */
     updateEntity(entityName, entity) {
-        if (usersEntities.indexOf(entityName) > -1) entityName = "User";
-        const id = entity.id;
-        if (this.entities[entityName] && this.entities[entityName][id]) {
-            this.entities[entityName][id] = entity;
-        } else {
-            throw "No such " + entityName + " with id: " + id;
-        }
-    };
+        this.mongoDb.model(entityName).findByIdAndUpdate(entity._id,entity, function (err, newEntity) {
+            if (err){
+                throw err;
+            }
+            if (!newEntity){
+                throw "No such " + entityName + " with id: " + id;
+            }
+        });
+    }
 
 }
 
+process.on('SIGINT', function() {
+    mongoose.connection.close(function () {
+        console.log('Mongoose disconnected on app termination');
+        process.exit(0);
+    });
+});
 const db = new Database();
 
-db.entityCtorMap = {
-    Branch : Branch,
-    Customer : Customer,
-    Manager : Manager,
-    Employee : Employee,
-    Provider : Provider,
-    Flower : Flower
-};
 
-db.userEntityCtors = usersEntities.map(entityName => db.entityCtorMap[entityName]);
-
-db.addEntity('Branch', ["Main Branch", "22 Hahagana, TLV"]);
-db.addEntity('Branch', ["Beney Berak", "33 Rabi Akiva, Beney Berak"]);
-db.addEntity('Manager', ["m1","m1", "Haim Green","22 Hahagana, TLV"]);
-db.addEntity('Employee', ["e1", "e1","Bibi Netanyahoo","33 Rabi Akiva, Beney Berak",1]);
-db.addEntity('Employee', ["e2", "e2", "Buji Herzog","22 Hahagana, TLV",2]);
-db.addEntity('Customer', ["c1", "c1", "Yoni Weis","33 Rabi Akiva, Beney Berak"]);
-db.addEntity('Customer', ["c2", "c2", "Moishe Zuchmir" ,"33 Rabi Akiva, Beney Berak"]);
-db.addEntity('Flower', ["Vered", "Pink", "./images/Vered.jpg" ,22.90]);
-db.addEntity('Flower', ["Kalanit", "Red", "./images/Calanit.jpg" ,12.90]);
-db.addEntity('Flower', ["Rakefet", "Purple", "./images/Rakefet.jpg" ,32.90]);
-db.addEntity('Flower', ["Hamanya", "Yellow", "./images/Hamanya.jpg" ,10.50]);
-db.addEntity('Flower', ["Gladyola", "White", "./images/Gladyola.jpg" ,15.00]);
+// db.addEntity('Branch', {name:"Main Branch", address:"22 Hahagana, TLV"}).then();
+// db.addEntity('Branch', {name:"Beney Berak", address:"33 Rabi Akiva, Beney Berak"}).then();
+// db.addEntity('User', {role:"Manager", username:"m1",password:"m1", fullName:"Haim Green",address:"22 Hahagana, TLV"}).then();
+// db.addEntity('User', {role:"Employee", username:"e1",password: "e1",fullName:"Bibi Netanyahoo",address:"33 Rabi Akiva, Beney Berak",branchId:1}).then();
+// db.addEntity('User', {role:"Employee", username:"e2",password: "e2",fullName: "Buji Herzog",address:"22 Hahagana, TLV",branchId:2}).then();
+// db.addEntity('User', {role:"Customer", username:"c1",password: "c1",fullName: "Yoni Weis",address:"33 Rabi Akiva, Beney Berak"}).then();
+// db.addEntity('User', {role:"Customer", username:"c2",password: "c2",fullName: "Moishe Zuchmir" ,address:"33 Rabi Akiva, Beney Berak"}).then();
+// db.addEntity('Flower', {name:"Vered",   color:"Pink",   imageUrl:"./images/Vered.jpg" ,     price:22.90}).then();
+// db.addEntity('Flower', {name:"Kalanit", color:"Red",    imageUrl:"./images/Calanit.jpg",    price:12.90}).then();
+// db.addEntity('Flower', {name:"Rakefet", color:"Purple", imageUrl:"./images/Rakefet.jpg",    price:32.90}).then();
+// db.addEntity('Flower', {name:"Hamanya", color:"Yellow", imageUrl:"./images/Hamanya.jpg",    price:10.50}).then();
+// db.addEntity('Flower', {name:"Gladyola",color: "White", imageUrl:"./images/Gladyola.jpg",   price:15.00}).then();
 
 module.exports = db;

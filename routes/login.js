@@ -7,24 +7,33 @@ const db = require('../model/database');
 passport.use('local-signin', new LocalStrategy(
     {passReqToCallback : true}, //allows us to pass back the request to the callback
     function(req, username, password, done) {
-        let user = db.getEntities("User").find(u => u.username === username && u.password === password);
-        if (user) {
-            console.log("LOGGED IN AS: " + user.username);
-            req.session.success = 'You are successfully logged in ' + user.username + '!';
-            done(null, user);
-        }
-        if (!user) {
-            console.log("COULD NOT LOG IN");
-            req.session.error = 'Could not log user in. Please try again.'; //inform user could not log them in
-            done(null, user);
-        }
+        db.getEntities("User")
+            .where('username').equals(username)
+            .where('password').equals(password)
+            //.select('name password')
+            .exec(
+            function (err,users) {
+                const user = users[0];
+                if (user) {
+                    console.log("LOGGED IN AS: " + user.username);
+                    req.session.success = 'You are successfully logged in ' + user.username + '!';
+                    done(null, user);
+                }
+                if (!user) {
+                    console.log("COULD NOT LOG IN");
+                    req.session.error = 'Could not log user in. Please try again.'; //inform user could not log them in
+                    done(null, user);
+                }
+            }
+        );
+
 
     }
 ));
 
 passport.serializeUser(function(user, done) {
     console.log("serializing " + user.username);
-    done(null, user);
+    done(null, user.toObject());
 });
 
 passport.deserializeUser(function(obj, done) {
