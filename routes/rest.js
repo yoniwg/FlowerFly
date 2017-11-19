@@ -6,6 +6,11 @@ function wrapJson(json) {
     return { data: json }
 }
 
+const httpCodes = {
+    badReq : 400,
+    success: 201,
+    unprocEntity: 422
+};
 
 ///////////////////
 // DELETE
@@ -17,7 +22,7 @@ router.delete('/:entity/:id', (req, res, next) => {
 
     db.deleteEntity(entity, id).then(err=> {
             if (!err) {
-                res.status(201).json({});
+                res.status(httpCodes.success).json({});
             }else {
                 // TODO handle error
             }
@@ -31,9 +36,9 @@ router.delete('/:entity/:id', (req, res, next) => {
 ///////////////////
 // GET ALL USERS
 ///////////////////
-
-const usersProps = Object.keys(require('../model/UserSchema').obj).filter(p=>p !== "isActive");
-const customerProps = usersProps.filter(p=> p !== "branchId" && p !== "flowersIds");
+const userSchema = require('../model/UserSchema');
+const usersProps = userSchema.propsTypes;
+const customerProps = userSchema.customerPropsTypes;
 
 router.get('/User/all', (req,res,next) => {
     const id = req.params.id;
@@ -73,11 +78,11 @@ router.get('/User/all', (req,res,next) => {
 // GET ALL
 ///////////////////
 
-router.get('/:entity/all', (req,res,next) => {
-    const entity = req.params.entity;
+router.get('/:entityType/all', (req,res,next) => {
+    const entityType = req.params.entityType;
 
-    db.getEntities(entity).then(items => {
-        res.status(201).json({items: items});
+    db.getEntities(entityType).then(items => {
+        res.status(httpCodes.success).json({items: items});
     });
 });
 
@@ -87,17 +92,16 @@ router.get('/:entity/all', (req,res,next) => {
 // GET BY ID
 ///////////////////
 
-router.get('/:entity/:id', (req,res,next) => {
+router.get('/:entityType/:id', (req,res,next) => {
     const id = req.params.id;
-    const entity = req.params.entity;
+    const entityType = req.params.entityType;
 
-    db.getEntity(entity, id).then(item=> {
+    db.getEntity(entityType, id).then(item=> {
         if (item) {
-            res.status(201).json({item: item});
+            res.status(httpCodes.success).json({item: item});
         } else {
             const message = "No entity of type '" + entity + "' with id " + id + " was found.";
-            const code = 422;
-            res.status(code).json({error: {code: code, message: message}});
+            res.status(httpCodes.unprocEntity).json({error: {code: httpCodes.unprocEntity, message: message}});
         }
     });
 });
@@ -107,8 +111,16 @@ router.get('/:entity/:id', (req,res,next) => {
 // CREATE
 ///////////////////
 
-router.post('/:entity', (req,res,next) => {
-    throw Error('not implemented')
+router.post('/:entityType/:parms', (req,res,next) => {
+    const entityType = req.params.entityType;
+    const parms = req.params.parms;
+
+    db.addEntity(entityType, parms).then(function (error, newId) {
+        if (error) {
+            res.status(httpCodes.badReq).json({error: {code: httpCodes.badReq, message: error.message}});
+        }
+        res.status(httpCodes.success).json({newId: newId});
+    })
 });
 
 
@@ -116,8 +128,17 @@ router.post('/:entity', (req,res,next) => {
 // UPDATE
 ///////////////////
 
-router.put('/:entity/:id', (req,res,next) => {
-    throw Error('not implemented')
+router.put('/:entityType/:id', (req,res,next) => {
+    const id = req.params.id;
+    const entityType = req.params.entityType;
+    const parms = req.body;
+    parms.id = id;
+    db.updateEntity(entityType, parms).then(function (error, newEntity) {
+        if (error) {
+            res.status(httpCodes.badReq).json({error: {code: httpCodes.badReq, message: error.message}});
+        }
+        res.status(httpCodes.success).json({newEntity: newEntity});
+    })
 });
 
 module.exports = router;

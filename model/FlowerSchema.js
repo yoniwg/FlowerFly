@@ -1,8 +1,7 @@
-const Schema = require('mongoose').Schema;
+const SchemaMaker = require('./SchemaMaker');
 
-const FlowerSchema = new Schema(
+const FlowerSchema = SchemaMaker(
     {
-        isActive : {type: Boolean, require: true, select:false},
         name :      {type: String,      require: true },
         color :     {type: String,      require: true },
         imageUrl :  {type: String,      require: true },

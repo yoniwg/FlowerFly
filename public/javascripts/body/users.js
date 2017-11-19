@@ -72,20 +72,26 @@ function showEditModal(user) {
     // set submit action
     $('#detailsForm').submit(e => {
         const isNew = id === 0;
-        const newUserDate = $("#detailsForm").serialize();
+        const newUserData = $("#detailsForm").serialize();
         if (isNew) {
-            $.ajax('./User', {
+            $.ajax('./rest/User', {
                 type: 'POST',
                 error: onError,
-                success: refreshUsers,
-                data: newUserDate
+                success: function(){
+                    $('#detailsModal').modal('toggle');
+                    refreshUsers();
+                },
+                data : newUserData
             });
         } else {
-            $.ajax('./User/' + id, {
+            $.ajax('./rest/User/' + id, {
                 type: 'PUT',
                 error: onError,
-                success: refreshUsers,
-                data: newUserDate
+                success: function(){
+                    $('#detailsModal').modal('toggle');
+                    refreshUsers();
+                },
+                data: newUserData
             });
         }
         e.preventDefault();

@@ -1,8 +1,7 @@
-const Schema = require('mongoose').Schema;
+const SchemaMaker = require('./SchemaMaker');
 
-const UserSchema = new Schema(
+const UserSchema = SchemaMaker(
     {
-        isActive :      {type: Boolean, require: true, select:false},
         username :      {type: String,   require: true, unique: true },
         password :      {type: String,   require: true },
         role :          {type: String,   require: true },
@@ -12,5 +11,12 @@ const UserSchema = new Schema(
         branchId:       {type: Number,    require: false }
     }
 );
+
+Object.defineProperty(UserSchema,"customerPropsTypes",{get:function () {
+    const returnedProps = this.propsTypes;
+    delete returnedProps.flowersIds;
+    delete returnedProps.branchId;
+    return returnedProps;
+}});
 
 module.exports = UserSchema;

@@ -1,8 +1,8 @@
-const Schema = require('mongoose').Schema;
+const SchemaMaker = require('./SchemaMaker');
 
-const BranchSchema = new Schema(
+
+const BranchSchema = SchemaMaker(
     {
-        isActive: {type: Boolean, require: true, select:false},
         name: {type: String, require: true},
         address: {type: String, require: true},
     }

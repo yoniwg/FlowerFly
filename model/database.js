@@ -78,14 +78,15 @@ class Database {
      * @param entity
      */
     updateEntity(entityName, entity) {
-        this.mongoDb.model(entityName).findByIdAndUpdate(entity._id,entity, function (err, newEntity) {
-            if (err){
-                throw err;
-            }
-            if (!newEntity){
-                throw "No such " + entityName + " with id: " + id;
-            }
-        });
+        return this.mongoDb.model(entityName).findByIdAndUpdate(entity._id, entity).then(
+            function (err, newEntity) {
+                if (err){
+                    throw err;
+                }
+                if (!newEntity){
+                    throw "No such " + entityName + " with id: " + id;
+                }
+            });
     }
 
 }

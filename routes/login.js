@@ -33,7 +33,11 @@ passport.use('local-signin', new LocalStrategy(
 
 passport.serializeUser(function(user, done) {
     console.log("serializing " + user.username);
-    done(null, user.toObject());
+    if (user.toObject instanceof Function) {
+        done(null, user.toObject());
+    }else{
+        done(null, user);
+    }
 });
 
 passport.deserializeUser(function(obj, done) {
@@ -58,12 +62,12 @@ function handleRemeberMe(req, res, next) {
 
 //sends the request through our local login/signin strategy, and if successful takes user to homepage, otherwise returns then to signin page
 router.post('/', function(req, res, next) {
-    passport.authenticate('local-signin', function(error, user, info) {
+    passport.authenticate('local-signin', function(error, user) {
         if(error) {
             return res.status(500).json(error);
         }
         if(!user) {
-            return res.status(401).json(info.message);
+            return res.status(401).json(req.session.error);
         }
         req.logIn(user, function (err) {
             if (err) { return next(err); }
@@ -89,7 +93,7 @@ router.get('/isLoggedIn',function (req, res, next) {
     }
 });
 
-function requireLoggedIn(req, res, next) {
+router.loggedIn = function(req, res, next) {
     if (req.user) {
         next();
     } else {
@@ -97,5 +101,4 @@ function requireLoggedIn(req, res, next) {
     }
 }
 
-router.loggedIn = requireLoggedIn;
 module.exports = router;
