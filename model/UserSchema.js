@@ -12,11 +12,11 @@ const UserSchema = SchemaMaker(
     }
 );
 
-Object.defineProperty(UserSchema,"customerPropsTypes",{get:function () {
-    const returnedProps = this.propsTypes;
+UserSchema.customerPropsTypes = function () {
+    const returnedProps = Object.apply({},this.propsTypes);
     delete returnedProps.flowersIds;
     delete returnedProps.branchId;
     return returnedProps;
-}});
+};
 
 module.exports = UserSchema;

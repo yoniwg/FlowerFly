@@ -42,7 +42,7 @@ passport.serializeUser(function(user, done) {
 
 passport.deserializeUser(function(obj, done) {
     console.log("deserializing " + obj);
-    done(null, obj);
+    db.getEntity('User', obj._id).then(done);
 });
 
 /* GET login page. */

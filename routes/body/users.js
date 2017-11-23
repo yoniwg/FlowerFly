@@ -1,7 +1,8 @@
 const db = require('../../model/database');
 
-const usersProps = Object.keys(require('../../model/UserSchema').obj).filter(p=> p !== "isActive");
-const customerProps = usersProps.filter(p=> p !== "branchId" && p !== "flowersIds");
+const userSchema = require('../../model/UserSchema');
+const usersProps = userSchema.propsTypes;
+const customerProps = userSchema.customerPropsTypes;
 
 function mw(req, res, next) {
     db.getEntities("User").then((users)=> {

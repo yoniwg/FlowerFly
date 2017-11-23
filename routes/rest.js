@@ -41,15 +41,11 @@ const usersProps = userSchema.propsTypes;
 const customerProps = userSchema.customerPropsTypes;
 
 router.get('/User/all', (req,res,next) => {
-    const id = req.params.id;
-
     db.getEntities("User").then(users=> {
-        let userRole;
+        if (req.user === undefined) next(Error("No user is "));
+        const userRole = req.user.role;
         let props;
         let editable = false;
-        if (req.user) {
-           userRole = req.user.role;
-        }
         switch (userRole) {
             case "Employee":
                 users = users
@@ -132,12 +128,13 @@ router.put('/:entityType/:id', (req,res,next) => {
     const id = req.params.id;
     const entityType = req.params.entityType;
     const parms = req.body;
-    parms.id = id;
+    parms._id = id;
     db.updateEntity(entityType, parms).then(function (error, newEntity) {
         if (error) {
             res.status(httpCodes.badReq).json({error: {code: httpCodes.badReq, message: error.message}});
+        } else {
+            res.status(httpCodes.success).json({newEntity: newEntity});
         }
-        res.status(httpCodes.success).json({newEntity: newEntity});
     })
 });
 

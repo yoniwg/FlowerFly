@@ -1,6 +1,6 @@
 
 let selectedId = 0;
-let fieldsAllowedToChange = []; // empty for all
+let fieldsAllowedToChange = {}; // empty for all
 
 
 function onSelectId(id) {
@@ -29,7 +29,7 @@ function onDeleteClick(){
 
 
 function onError (x) {
-    console.log(x.responseText)
+    console.log("error: " + x.responseText)
 }
 
 function refreshUsers() {
@@ -60,7 +60,7 @@ function showEditModal(user) {
 
     // fill edit fields
     let html = '';
-    fieldsAllowedToChange.forEach(field => {
+    Object.keys(fieldsAllowedToChange).forEach(field => {
         const label = nameFromField(field);
         html += '<label for="' + 'input_' + field + '" >' + label + '</label>\n';
 
@@ -76,7 +76,7 @@ function showEditModal(user) {
         if (isNew) {
             $.ajax('./rest/User', {
                 type: 'POST',
-                error: onError,
+                error: function(x) { onError(x) },
                 success: function(){
                     $('#detailsModal').modal('toggle');
                     refreshUsers();
@@ -88,7 +88,7 @@ function showEditModal(user) {
                 type: 'PUT',
                 error: onError,
                 success: function(){
-                    $('#detailsModal').modal('toggle');
+                    $('#detailsModal').modal('toggle');re
                     refreshUsers();
                 },
                 data: newUserData
@@ -108,7 +108,7 @@ function showUsers(users, props, editable) {
         const id = user._id;
         trs += '<tr>';
         trs  += ('<td><input type="checkbox" class="checkthis"></td>');
-        props.forEach(field => {
+        Object.keys(props).forEach(field => {
             trs  += ('<td>' + userfieldToString(user, field)  + '</td>');
         });
         if (editable) {

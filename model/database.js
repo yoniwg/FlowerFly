@@ -86,6 +86,7 @@ class Database {
                 if (!newEntity){
                     throw "No such " + entityName + " with id: " + id;
                 }
+                return newEntity;
             });
     }
 

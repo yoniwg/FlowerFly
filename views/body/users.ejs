@@ -5,7 +5,7 @@
         <thead><tr>
             <th><input type="checkbox" id="checkall"></th>
             <%
-            props.forEach((fieldName) => {
+            Object.keys(props).forEach((fieldName) => {
             %><th><%=fieldName%></th><%
             })
             if (editable) {%>
