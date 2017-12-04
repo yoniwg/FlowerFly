@@ -1,7 +1,5 @@
 
-let selectedId = 0;
-let fieldsAllowedToChange = {}; // empty for all
-
+let selectedId = -1;
 
 function onSelectId(id) {
     selectedId = id;
@@ -13,29 +11,28 @@ function onOpenDetailsModal(id) {
 
     $.ajax('./rest/User/' + id, {
        type: 'GET',
-       error: onError,
+       error: onErrorResponse,
        success: res => showEditModal(res.item)
     });
 }
 
 function onDeleteClick(){
-    const id = selectedId;
-    $.ajax('./rest/User/' + id, {
+    $.ajax('./rest/User/' + selectedId, {
         type: "DELETE",
         success: refreshUsers,
-        error: onError
+        error: onErrorResponse
     });
 }
 
 
-function onError (x) {
-    console.log("error: " + x.responseText)
+function onErrorResponse (res) {
+    console.error("error: " + res.responseText)
 }
 
 function refreshUsers() {
     $.ajax('./rest/User/all', {
-        success: res => showUsers(res.items, res.props, res.editable),
-        error: onError
+        success: res => showUsers(res.items),
+        error: onErrorResponse
     })
 }
 
@@ -50,6 +47,18 @@ function nameFromField(text) {
     return finalResult;
 }
 
+function parseType(field) {
+    switch (locals.props[field]){
+        case "String":
+            return "text";
+        case "Integer":
+            return "number";
+        case "Array":
+            return "list"
+    }
+
+}
+
 function showEditModal(user) {
     const id = user ? user._id : 0;
 
@@ -60,12 +69,20 @@ function showEditModal(user) {
 
     // fill edit fields
     let html = '';
-    Object.keys(fieldsAllowedToChange).forEach(field => {
+    Object.keys(locals.props).forEach(field => {
         const label = nameFromField(field);
         html += '<label for="' + 'input_' + field + '" >' + label + '</label>\n';
-
-        const value = user ? user[field] : '';
-        html += '<input type="text" id="input_' + field + '" class="form-control" name="' + field  + '" placeholder="' + label + '" value="' + value + '" required autofocus></input>\n';
+        const fieldType = locals.props[field];
+        const value = user ? user[field] : (fieldType === "String") ? '' : (fieldType === "Number") ? 0 : [];
+        if (locals.props[field] === "Array"){
+            html += '<select class="selectpicker" multiple>\n';
+            value.forEach(elem => {
+                html += '<option value="elem">elem</option>'
+            });
+            html += '</select>'
+        }else {
+            html += '<input type="' + parseType(field) + '" id="input_' + field + '" class="form-control" name="' + field + '" placeholder="' + label + '" value="' + value + '" required autofocus/>\n';
+        }
     });
     $('#detailsModelFields').html(html);
 
@@ -76,7 +93,7 @@ function showEditModal(user) {
         if (isNew) {
             $.ajax('./rest/User', {
                 type: 'POST',
-                error: function(x) { onError(x) },
+                error: function(x) { onErrorResponse(x) },
                 success: function(){
                     $('#detailsModal').modal('toggle');
                     refreshUsers();
@@ -86,9 +103,9 @@ function showEditModal(user) {
         } else {
             $.ajax('./rest/User/' + id, {
                 type: 'PUT',
-                error: onError,
+                error: onErrorResponse,
                 success: function(){
-                    $('#detailsModal').modal('toggle');re
+                    $('#detailsModal').modal('toggle');
                     refreshUsers();
                 },
                 data: newUserData
@@ -99,19 +116,18 @@ function showEditModal(user) {
 
 }
 
-function showUsers(users, props, editable) {
-
-    fieldsAllowedToChange = props;
+function showUsers(users) {
 
     let trs = '';
     users.forEach(user => {
         const id = user._id;
         trs += '<tr>';
         trs  += ('<td><input type="checkbox" class="checkthis"></td>');
-        Object.keys(props).forEach(field => {
+        Object.keys(locals.props)
+            .forEach(field => {
             trs  += ('<td>' + userfieldToString(user, field)  + '</td>');
         });
-        if (editable) {
+        if (locals.editable) {
             trs  += ('<td><p data-placement="top" data-toggle="tooltip" title="" data-original-title="Edit"><button class="btn btn-primary btn-xs" data-title="Edit" data-toggle="modal" data-target="#detailsModal" onclick="onOpenDetailsModal(\''+id+'\')"><span class="glyphicon glyphicon-pencil"></span></button></p></td>');
             trs  += ('<td><p data-placement="top" data-toggle="tooltip" title="" data-original-title="Delete"><button class="btn btn-danger btn-xs" data-title="Delete" data-toggle="modal" data-target="#delete" onclick="onSelectId(\''+id+'\')"><span class="glyphicon glyphicon-trash"></span></button></p></td>');
         }

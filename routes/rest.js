@@ -37,35 +37,33 @@ router.delete('/:entity/:id', (req, res, next) => {
 // GET ALL USERS
 ///////////////////
 const userSchema = require('../model/UserSchema');
-const usersProps = userSchema.propsTypes;
-const customerProps = userSchema.customerPropsTypes;
+const usersProps = Object.keys(userSchema.propsTypes).join(" ");
+const customerProps = Object.keys(userSchema.customerPropsTypes).join(" ");
 
 router.get('/User/all', (req,res,next) => {
-    db.getEntities("User").then(users=> {
-        if (req.user === undefined) next(Error("No user is "));
-        const userRole = req.user.role;
-        let props;
-        let editable = false;
-        switch (userRole) {
-            case "Employee":
+    if (!req.user) {
+        res.status(201).json({items: []});
+        next();
+    }
+    const userRole = req.user.role;
+    if (userRole !== "Manager" && userRole !== "Employee") {
+        next(new Error("a " + userRole + " is not allowed to see users' details."));
+    }
+    db.getEntities("User")
+        .select(userRole === "Manager" ? usersProps : customerProps)
+        .exec((err,users)=> {
+            if (err) next(err);
+            if (userRole === "Employee") {
                 users = users
                     .filter(u => u.role === "Customer")
                     .map(u => {
                         u.password = "*****";
                         return u;
                     });
-                props = customerProps;
-                break;
-            case "Manager":
-                props = usersProps;
-                editable = true;
-                break;
-            default :
-                next(new Error("a " + userRole + " is not allowed to see users' details."))
-        }
+            }
 
-        res.status(201).json({items: users, props: props, editable: editable});
-    });
+            res.status(201).json({items: users});
+        });
 });
 
 
@@ -79,7 +77,7 @@ router.get('/:entityType/all', (req,res,next) => {
 
     db.getEntities(entityType).then(items => {
         res.status(httpCodes.success).json({items: items});
-    });
+    }).catch(next);
 });
 
 
@@ -99,7 +97,7 @@ router.get('/:entityType/:id', (req,res,next) => {
             const message = "No entity of type '" + entity + "' with id " + id + " was found.";
             res.status(httpCodes.unprocEntity).json({error: {code: httpCodes.unprocEntity, message: message}});
         }
-    });
+    }).catch(next);
 });
 
 

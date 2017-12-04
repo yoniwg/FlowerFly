@@ -10,7 +10,6 @@ passport.use('local-signin', new LocalStrategy(
         db.getEntities("User")
             .where('username').equals(username)
             .where('password').equals(password)
-            //.select('name password')
             .exec(
             function (err,users) {
                 const user = users[0];
@@ -42,7 +41,8 @@ passport.serializeUser(function(user, done) {
 
 passport.deserializeUser(function(obj, done) {
     console.log("deserializing " + obj);
-    db.getEntity('User', obj._id).then(done);
+    db.getEntity('User', obj._id)
+        .then(user => done(null,user),err => done(err,null));
 });
 
 /* GET login page. */
