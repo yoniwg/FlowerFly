@@ -5,26 +5,10 @@
     </script>
     <table id="usersTable" class="table table-bordred table-striped">
 
-        <thead><tr>
-            <th><input type="checkbox" id="checkall"></th>
-            <%
-            Object.keys(props).forEach((fieldName) => {
-            %><th><%=fieldName%></th><%
-            })
-            if (editable) {%>
-            <th>Edit</th>
-            <th>Delete</th>
-            <%} %>
-        </tr></thead>
-        <tbody id="usersTableBody" >
-
-
-        </tbody>
-
     </table>
 
 
-    <button type="button" class="btn btn-danger bmd-btn-fab">
+    <button type="button" class="btn btn-danger bmd-btn-fab" data-toggle="modal" data-target="#detailsModal" onclick="onOpenDetailsModal(0)">
         <i class="material-icons">Add</i>
     </button>
 

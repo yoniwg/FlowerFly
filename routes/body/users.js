@@ -5,8 +5,9 @@ const usersProps = userSchema.propsTypes;
 const customerProps = userSchema.customerPropsTypes;
 
 function mw(req, res, next) {
-    if (!req.user) next(new Error("Internal Error: req.user is not defined."));
-    const userRole = req.user.role;
+    const connectedUser = req.user;
+    if (!connectedUser) return next(new Error("No user is connected."));
+    const userRole = connectedUser.role;
     if (userRole !== "Manager" && userRole !== "Employee") {
         next(new Error("a " + userRole + " is not allowed to see users' details."));
     }

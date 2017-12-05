@@ -2,9 +2,7 @@ const express = require('express');
 const router = express.Router();
 const db = require('../model/database');
 
-function wrapJson(json) {
-    return { data: json }
-}
+
 
 const httpCodes = {
     badReq : 400,
@@ -37,8 +35,19 @@ router.delete('/:entity/:id', (req, res, next) => {
 // GET ALL USERS
 ///////////////////
 const userSchema = require('../model/UserSchema');
-const usersProps = Object.keys(userSchema.propsTypes).join(" ");
-const customerProps = Object.keys(userSchema.customerPropsTypes).join(" ");
+const usersProps = Object.keys(userSchema.propsTypes);
+const customerProps = Object.keys(userSchema.customerPropsTypes);
+
+const propsDetails = {
+    "username":   {type: "String", require: true, editable:false},
+    "password":   {type: "String", require: true, editable:true},
+    "role":       {type: "String", require: true, editable:true, enum: ["Customer", "Manager", "Employee"]},
+    "fullName":   {type: "String", require: true, editable:true},
+    "address":    {type: "String", require: true, editable:true},
+    "flowersIds": {type: "Array",  require: false, editable:false},
+    "branchId":   {type: "Number", require: false, editable:false}
+};
+
 
 router.get('/User/all', (req,res,next) => {
     if (!req.user) {
@@ -49,8 +58,10 @@ router.get('/User/all', (req,res,next) => {
     if (userRole !== "Manager" && userRole !== "Employee") {
         next(new Error("a " + userRole + " is not allowed to see users' details."));
     }
+    const editable = true; // TODO
+    const props = userRole === "Manager" ? usersProps : customerProps;
     db.getEntities("User")
-        .select(userRole === "Manager" ? usersProps : customerProps)
+        .select(props.join(" "))
         .exec((err,users)=> {
             if (err) next(err);
             if (userRole === "Employee") {
@@ -62,7 +73,12 @@ router.get('/User/all', (req,res,next) => {
                     });
             }
 
-            res.status(201).json({items: users});
+            res.status(201).json({
+                items: users,
+                props: props,
+                propsDetails: propsDetails,
+                editable:editable
+            });
         });
 });
 
@@ -105,16 +121,13 @@ router.get('/:entityType/:id', (req,res,next) => {
 // CREATE
 ///////////////////
 
-router.post('/:entityType/:parms', (req,res,next) => {
+router.post('/:entityType', (req,res,next) => {
     const entityType = req.params.entityType;
-    const parms = req.params.parms;
+    const parms = req.body;
 
-    db.addEntity(entityType, parms).then(function (error, newId) {
-        if (error) {
-            res.status(httpCodes.badReq).json({error: {code: httpCodes.badReq, message: error.message}});
-        }
+    db.addEntity(entityType, parms).then(newId => {
         res.status(httpCodes.success).json({newId: newId});
-    })
+    }).catch(next)
 });
 
 
@@ -127,14 +140,19 @@ router.put('/:entityType/:id', (req,res,next) => {
     const entityType = req.params.entityType;
     const parms = req.body;
     parms._id = id;
-    db.updateEntity(entityType, parms).then(function (error, newEntity) {
-        if (error) {
-            res.status(httpCodes.badReq).json({error: {code: httpCodes.badReq, message: error.message}});
-        } else {
-            res.status(httpCodes.success).json({newEntity: newEntity});
-        }
-    })
+    db.updateEntity(entityType, parms)
+        .then(newEntity => res.status(httpCodes.success).json({newItem: newEntity}))
+        .catch(next)
 });
+
+////////////////////////////
+// Error handling for rest
+////////////////////////////
+
+router.use((err,req,res,next) => {
+    res.status(err.status || 500).send(err.message);
+});
+
 
 module.exports = router;
 
