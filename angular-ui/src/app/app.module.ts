@@ -19,6 +19,10 @@ import {ScreenBlockService} from "./screen-block.service";
 import { ScreenBlockComponent } from './screen-block/screen-block.component';
 import {LoginService} from "./login.service";
 import { NotFoundComponent } from './not-found/not-found.component';
+import {HttpModule} from "@angular/http";
+import { UsersComponent } from './users/users.component';
+import {RestRepositoryService} from "./rest-repository.service";
+import {HttpClientModule} from "@angular/common/http";
 
 
 @NgModule({
@@ -28,10 +32,12 @@ import { NotFoundComponent } from './not-found/not-found.component';
     AboutComponent,
     UserDetailsComponent,
     ScreenBlockComponent,
-    NotFoundComponent
+    NotFoundComponent,
+    UsersComponent
   ],
   imports: [
     BrowserModule,
+    HttpClientModule,
     AppRoutingModule,
     MatButtonModule,
     MatCheckboxModule,
@@ -48,7 +54,7 @@ import { NotFoundComponent } from './not-found/not-found.component';
     MatListModule
   ],
   exports: [MatButtonModule, MatCheckboxModule, MatSidenavModule, BrowserAnimationsModule ],
-  providers: [ScreenBlockService, LoginService],
+  providers: [ScreenBlockService, LoginService, RestRepositoryService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

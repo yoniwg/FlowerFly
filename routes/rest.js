@@ -92,7 +92,9 @@ router.get('/:entityType/all', (req,res,next) => {
     const entityType = req.params.entityType;
 
     db.getEntities(entityType).then(items => {
-        res.status(httpCodes.success).json({items: items});
+        res
+            .status(httpCodes.success)
+            .json({items: items});
     }).catch(next);
 });
 
