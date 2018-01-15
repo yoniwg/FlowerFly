@@ -1,6 +1,11 @@
 import {Component, OnInit} from '@angular/core';
-import {ScreenBlockService} from "./screen-block.service";
+import {BlockScreenService} from "./screen-block.service";
 import {LoginService} from "./login.service";
+import {LoginDialogComponent} from "./login-dialog/login-dialog.component";
+import {MatDialog, MatDialogRef} from "@angular/material";
+import {delay, flatMap} from "rxjs/operators";
+import {tap} from "rxjs/operators";
+import {map} from "rxjs/operators";
 
 const FULL_MENU = [
   {"title": "Home", "msgId": "home", "link": "/", "accessAll" : true},
@@ -11,6 +16,7 @@ const FULL_MENU = [
   {"title": "Contact", "msgId": "contact", "link": "/contact", "accessAll" : true}
 ];
 
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -19,27 +25,32 @@ const FULL_MENU = [
 export class AppComponent implements OnInit {
 
   constructor(
-    private block: ScreenBlockService,
-    private login: LoginService
+    private blockScreen: BlockScreenService,
+    private $login: LoginService,
+    private $dialog: MatDialog
     ) {}
 
   ngOnInit() {
-    // this.blockScreenShown = true;
-     this.block.onShownChange.subscribe(shown => this.blockScreenShown = shown)
+
   }
 
   title = 'Flower Fly';
 
-  blockScreenShown: boolean = false;
-
-  private _menu = [
-    {title: "Home", link: ""},
-    {title: "About", link: "/about"},
-    {title: "User 1", link: "/user/1"}
-  ];
-
   get menu() {
-    return FULL_MENU.filter(item => this.login.hasPermission(item))
+    return FULL_MENU.filter(item => this.$login.hasPermission(item))
+  }
+
+  showLoginModal() {
+      const dialogRef = this.$dialog.open(LoginDialogComponent);
+      dialogRef.afterClosed()
+        .pipe(
+          tap(_ => this.blockScreen.showProgress()),
+          flatMap(res => res && this.$login.login(res.username, res.password))
+        )
+        .subscribe(
+          res => this.blockScreen.hide(),
+            err => this.blockScreen.showError(err)
+        )
   }
 
 }

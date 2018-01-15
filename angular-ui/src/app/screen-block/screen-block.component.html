@@ -1,7 +1,7 @@
 
-<mat-spinner *ngIf="progressShown"></mat-spinner>
-<h2>title: {{block.title}}</h2>
-<p>message: {{block.message}}</p>
-<p>buttonTitle: {{block.buttonTitle}}</p>
-<p>onClick: <a onclick="block.onClick()">{{block.onClick}}</a></p>
+<mat-spinner *ngIf="blockScreen.progressShown"></mat-spinner>
+<h2>title: {{blockScreen.title}}</h2>
+<p>message: {{blockScreen.message}}</p>
+<p>buttonTitle: {{blockScreen.buttonTitle}}</p>
+<p>onClick: <a onclick="blockScreen.onClick()">{{blockScreen.onClick}}</a></p>
 <p *ngIf="'TODO this is not the home page'">Return to <a routerLink="">Home Page</a></p>

@@ -3,7 +3,7 @@ import {BehaviorSubject} from "rxjs/BehaviorSubject";
 import {NavigationStart, Router} from "@angular/router";
 
 @Injectable()
-export class ScreenBlockService {
+export class BlockScreenService {
 
   constructor(private router: Router){
     this.router.events.subscribe(event => {
@@ -40,10 +40,6 @@ export class ScreenBlockService {
 
   progressShown: boolean = false;
 
-  showError(error: Error, buttonTitle: string = null, onClick: () => void = null) {
-    this.showMessage(error.name, error.message, this.buttonTitle, this.onClick)
-  }
-
   showMessage(title: string, message: string = null, buttonTitle: string = null, onClick: () => void = null) {
     const hasMessage = buttonTitle && onClick && buttonTitle.length != 0;
     this.onClick = hasMessage ? onClick : null;
@@ -56,7 +52,11 @@ export class ScreenBlockService {
     this.shown = true;
   }
 
-  showProgress(title: string, message: string = null, buttonTitle: string = null, onClick: () => void = null) {
+  showError(error: Error, buttonTitle: string = null, onClick: () => void = null) {
+    this.showMessage(error.name, error.message, buttonTitle, onClick)
+  }
+
+  showProgress(title: string = "", message: string = null, buttonTitle: string = null, onClick: () => void = null) {
     const hasMessage = buttonTitle && onClick && buttonTitle.length != 0;
     this.onClick = hasMessage ? onClick : null;
     this.buttonTitle = hasMessage ? buttonTitle : null;

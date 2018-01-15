@@ -61,7 +61,7 @@ function handleRemeberMe(req, res, next) {
 }
 
 //sends the request through our local login/signin strategy, and if successful takes user to homepage, otherwise returns then to signin page
-router.post('/', function(req, res, next) {
+router.post('/login', function(req, res, next) {
     passport.authenticate('local-signin', function(error, user) {
         if(error) {
             return res.status(500).json(error);

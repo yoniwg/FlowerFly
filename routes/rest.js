@@ -51,9 +51,11 @@ const propsDetails = {
 
 router.get('/User/all', (req,res,next) => {
     if (!req.user) {
-        res.status(201).json({items: []});
-        next();
+        const err = new Error("user is not logged in");
+        err.status = 401;
+        next(err);
     }
+
     const userRole = req.user.role;
     if (userRole !== "Manager" && userRole !== "Employee") {
         next(new Error("a " + userRole + " is not allowed to see users' details."));

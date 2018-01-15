@@ -1,15 +1,15 @@
 import { TestBed, inject } from '@angular/core/testing';
 
-import { ScreenBlockService } from './screen-block.service';
+import { BlockScreenService } from './screen-block.service';
 
-describe('ScreenBlockService', () => {
+describe('BlockScreenService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [ScreenBlockService]
+      providers: [BlockScreenService]
     });
   });
 
-  it('should be created', inject([ScreenBlockService], (service: ScreenBlockService) => {
+  it('should be created', inject([BlockScreenService], (service: BlockScreenService) => {
     expect(service).toBeTruthy();
   }));
 });

@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { BlockScreenComponent } from './screen-block.component';
+import { LoginDialogComponent } from './login-dialog.component';
 
-describe('BlockScreenComponent', () => {
-  let component: BlockScreenComponent;
-  let fixture: ComponentFixture<BlockScreenComponent>;
+describe('LoginDialogComponent', () => {
+  let component: LoginDialogComponent;
+  let fixture: ComponentFixture<LoginDialogComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ BlockScreenComponent ]
+      declarations: [ LoginDialogComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(BlockScreenComponent);
+    fixture = TestBed.createComponent(LoginDialogComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

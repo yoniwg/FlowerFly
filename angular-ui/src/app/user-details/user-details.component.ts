@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute} from "@angular/router";
-import {ScreenBlockService} from "../screen-block.service";
+import {BlockScreenService} from "../screen-block.service";
 
 @Component({
   selector: 'app-user-details',
@@ -11,7 +11,7 @@ export class UserDetailsComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private block: ScreenBlockService
+    private block: BlockScreenService
   ) { }
 
   private id: number ;

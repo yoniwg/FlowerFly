@@ -5,7 +5,10 @@ import { AppRoutingModule } from './app-routing.module';
 
 import { AppComponent } from './app.component';
 import {
-  MatButtonModule, MatCardModule, MatCheckboxModule, MatIconModule, MatListModule, MatMenuModule, MatNavList,
+  MatButtonModule, MatCardModule, MatCheckboxModule, MatDialogModule, MatFormFieldModule, MatIconModule, MatInputModule,
+  MatListModule,
+  MatMenuModule,
+  MatNavList,
   MatProgressSpinnerModule,
   MatSidenavModule,
   MatToolbarModule
@@ -15,14 +18,15 @@ import { AboutComponent } from './about/about.component';
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {FormsModule} from "@angular/forms";
 import { UserDetailsComponent } from './user-details/user-details.component';
-import {ScreenBlockService} from "./screen-block.service";
-import { ScreenBlockComponent } from './screen-block/screen-block.component';
+import {BlockScreenService} from "./screen-block.service";
+import { BlockScreenComponent } from './screen-block/screen-block.component';
 import {LoginService} from "./login.service";
 import { NotFoundComponent } from './not-found/not-found.component';
 import {HttpModule} from "@angular/http";
 import { UsersComponent } from './users/users.component';
 import {RestRepositoryService} from "./rest-repository.service";
 import {HttpClientModule} from "@angular/common/http";
+import { LoginDialogComponent } from './login-dialog/login-dialog.component';
 
 
 @NgModule({
@@ -31,9 +35,10 @@ import {HttpClientModule} from "@angular/common/http";
     HomeComponent,
     AboutComponent,
     UserDetailsComponent,
-    ScreenBlockComponent,
+    BlockScreenComponent,
     NotFoundComponent,
-    UsersComponent
+    UsersComponent,
+    LoginDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -51,10 +56,14 @@ import {HttpClientModule} from "@angular/common/http";
     MatToolbarModule,
     MatIconModule,
     MatProgressSpinnerModule,
-    MatListModule
+    MatListModule,
+    MatDialogModule,
+    MatInputModule,
+    MatFormFieldModule
   ],
+  entryComponents:[LoginDialogComponent],
   exports: [MatButtonModule, MatCheckboxModule, MatSidenavModule, BrowserAnimationsModule ],
-  providers: [ScreenBlockService, LoginService, RestRepositoryService],
+  providers: [BlockScreenService, LoginService, RestRepositoryService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -1,14 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import {ScreenBlockService} from "../screen-block.service";
+import {BlockScreenService} from "../screen-block.service";
 
 @Component({
-  selector: 'app-screen-block',
+  selector: 'app-block-screen',
   templateUrl: './screen-block.component.html',
   styleUrls: ['./screen-block.component.scss']
 })
-export class ScreenBlockComponent implements OnInit {
+export class BlockScreenComponent implements OnInit {
 
-  constructor(private block: ScreenBlockService) { }
+  constructor(private blockScreen: BlockScreenService) { }
 
   ngOnInit() {
   }

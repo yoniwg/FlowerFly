@@ -10,6 +10,11 @@
       {{item.title}}
     </button>
     <button mat-button [matMenuTriggerFor]="appMenu"><mat-icon>menu</mat-icon> Menu</button>
+
+    <button mat-button (click)="showLoginModal()" *ngIf="!$login.isLoggedIn">
+      <mat-icon>input</mat-icon>
+    </button>
+
   </mat-toolbar>
 
 
@@ -19,10 +24,9 @@
             routerLink={{item.link}}>{{item.title}}</button>
   </mat-menu>
 
-
   <div>
-    <router-outlet *ngIf="!blockScreenShown"></router-outlet>
-    <app-screen-block *ngIf="blockScreenShown"></app-screen-block>
+    <router-outlet *ngIf="!blockScreen.shown"></router-outlet>
+    <app-block-screen *ngIf="blockScreen.shown"></app-block-screen>
   </div>
 
 </mat-sidenav-container>
