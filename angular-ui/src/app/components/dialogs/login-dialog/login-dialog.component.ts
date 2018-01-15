@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {MatDialog, MatDialogRef} from "@angular/material";
+import {Credentials} from "../../../services/login/credentials";
 
 @Component({
   selector: 'app-login-dialog',
@@ -10,7 +11,7 @@ export class LoginDialogComponent implements OnInit {
 
   constructor(private dialogRef: MatDialogRef<LoginDialogComponent>) { }
 
-  private data = { username: "" , password: ""};
+  private cred = new Credentials();
 
   ngOnInit() {
   }

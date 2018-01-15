@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute} from "@angular/router";
-import {BlockScreenService} from "../screen-block.service";
+import {BlockScreenService} from "../../../services/screen-block/screen-block.service";
 
 @Component({
   selector: 'app-user-details',

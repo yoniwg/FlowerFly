@@ -2,13 +2,13 @@
 <div class="app-form" mat-dialog-content>
   <p>Please enter your credentials:</p>
   <mat-form-field>
-    <input matInput [(ngModel)]="data.username" placeholder="username">
+    <input matInput [(ngModel)]="cred.username" placeholder="username">
   </mat-form-field>
   <mat-form-field>
-    <input type="password" matInput [(ngModel)]="data.password" placeholder="password">
+    <input type="password" matInput [(ngModel)]="cred.password" placeholder="password">
   </mat-form-field>
 </div>
 <div mat-dialog-actions>
   <button mat-button (click)="dialogRef.close()">Cancel</button>
-  <button mat-button (click)="dialogRef.close(data)">Login</button>
+  <button mat-button (click)="dialogRef.close(cred)">Login</button>
 </div>

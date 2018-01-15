@@ -13,20 +13,20 @@ import {
   MatSidenavModule,
   MatToolbarModule
 } from "@angular/material";
-import { HomeComponent } from './home/home.component';
-import { AboutComponent } from './about/about.component';
+import { HomeComponent } from './components/main-pages/home/home.component';
+import { AboutComponent } from './components/main-pages/about/about.component';
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {FormsModule} from "@angular/forms";
-import { UserDetailsComponent } from './user-details/user-details.component';
-import {BlockScreenService} from "./screen-block.service";
-import { BlockScreenComponent } from './screen-block/screen-block.component';
-import {LoginService} from "./login.service";
-import { NotFoundComponent } from './not-found/not-found.component';
+import { UserDetailsComponent } from './components/dialogs/user-details/user-details.component';
+import {BlockScreenService} from "./services/screen-block/screen-block.service";
+import { BlockScreenComponent } from './components/shared/screen-block/screen-block.component';
+import {LoginService} from "./services/login/login.service";
+import { NotFoundComponent } from './components/shared/not-found/not-found.component';
 import {HttpModule} from "@angular/http";
-import { UsersComponent } from './users/users.component';
-import {RestRepositoryService} from "./rest-repository.service";
+import { UsersComponent } from './components/main-pages/users/users.component';
+import {RestRepositoryService} from "./services/rest/rest-repository.service";
 import {HttpClientModule} from "@angular/common/http";
-import { LoginDialogComponent } from './login-dialog/login-dialog.component';
+import { LoginDialogComponent } from './components/dialogs/login-dialog/login-dialog.component';
 
 
 @NgModule({

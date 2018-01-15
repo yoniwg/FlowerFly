@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import {RestRepositoryService} from "../rest-repository.service";
-import {BlockScreenService} from "../screen-block.service";
+import {RestRepositoryService} from "../../../services/rest/rest-repository.service";
+import {BlockScreenService} from "../../../services/screen-block/screen-block.service";
 import {delay} from "rxjs/operators/delay";
 
 @Component({

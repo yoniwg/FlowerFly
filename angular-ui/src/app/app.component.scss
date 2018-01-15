@@ -1,0 +1,13 @@
+.spacer {
+  flex: 1 1 auto;
+}
+
+@mixin mat-icon-size($size: 24px) {
+  font-size: $size;
+  height: $size;
+  width: $size;
+}
+
+.mat-icon {
+  @include mat-icon-size();
+}

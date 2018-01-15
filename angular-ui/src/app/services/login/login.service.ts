@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import {Observable} from "rxjs/Observable";
-import {HttpClient} from "@angular/common/http";
+import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {catchError, map, tap} from "rxjs/operators";
+import {Credentials} from "./credentials";
 
 
 const BASE = "http://localhost:3000/login";
@@ -16,16 +17,23 @@ const tapOnError = function(action: (Error) => void) {
 @Injectable()
 export class LoginService {
 
-  private user = null;
-  get isLoggedIn() {return this.user != null}
+  private userRole = null;
+  private username = null;
+
+  get isLoggedIn() {
+    return this.userRole != null
+  }
 
   constructor(private http : HttpClient) {}
 
-  login(username, password): Observable<void> {
+  login(cred: Credentials): Observable<void> {
     return this.http
-      .get(BASE + "/login")
+      .post(BASE + "/login",cred)
       .pipe(
-        tap(res => this.user = (res as any).user)
+        tap(res =>{
+          this.username = cred.username;
+          this.userRole = (res as any).userRole
+        })
         // , tapOnError(err => this.user = null)
         , map(_ => null)
       )
@@ -35,7 +43,10 @@ export class LoginService {
     return this.http
       .get(BASE + "/logout")
       .pipe(
-        tap(_ => this.user = null),
+        tap(_ => {
+          this.userRole = null;
+          this.username = null;
+        }),
         map(_ => null)
       )
   }

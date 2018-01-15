@@ -1,8 +1,8 @@
 import {Component, OnInit} from '@angular/core';
-import {BlockScreenService} from "./screen-block.service";
-import {LoginService} from "./login.service";
-import {LoginDialogComponent} from "./login-dialog/login-dialog.component";
-import {MatDialog, MatDialogRef} from "@angular/material";
+import {BlockScreenService} from "./services/screen-block/screen-block.service";
+import {LoginService} from "./services/login/login.service";
+import {LoginDialogComponent} from "./components/dialogs/login-dialog/login-dialog.component";
+import {MatDialog, MatDialogRef, MatIconRegistry} from "@angular/material";
 import {delay, flatMap} from "rxjs/operators";
 import {tap} from "rxjs/operators";
 import {map} from "rxjs/operators";
@@ -27,8 +27,11 @@ export class AppComponent implements OnInit {
   constructor(
     private blockScreen: BlockScreenService,
     private $login: LoginService,
-    private $dialog: MatDialog
-    ) {}
+    private $dialog: MatDialog,
+    public matIconRegistry: MatIconRegistry) {
+    //add custom material icons
+    matIconRegistry.registerFontClassAlias('fa');
+  }
 
   ngOnInit() {
 
@@ -45,7 +48,7 @@ export class AppComponent implements OnInit {
       dialogRef.afterClosed()
         .pipe(
           tap(_ => this.blockScreen.showProgress()),
-          flatMap(res => res && this.$login.login(res.username, res.password))
+          flatMap(cred => cred && this.$login.login(cred))
         )
         .subscribe(
           res => this.blockScreen.hide(),

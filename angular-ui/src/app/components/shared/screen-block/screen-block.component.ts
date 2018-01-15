@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {BlockScreenService} from "../screen-block.service";
+import {BlockScreenService} from "../../../services/screen-block/screen-block.service";
 
 @Component({
   selector: 'app-block-screen',
