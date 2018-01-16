@@ -28,11 +28,7 @@ export class AppComponent implements OnInit {
   constructor(
     private blockScreen: BlockScreenService,
     private $login: LoginService,
-    private $dialog: MatDialog,
-    public matIconRegistry: MatIconRegistry) {
-    //add custom material icons
-    matIconRegistry.registerFontClassAlias('fa');
-  }
+    private $dialog: MatDialog) {}
 
   ngOnInit() {
 
@@ -65,7 +61,7 @@ export class AppComponent implements OnInit {
         flatMap(answer => answer && this.$login.logout())
       )
       .subscribe(
-        res => this.blockScreen.hide(),
+        _ => this.blockScreen.hide(),
         err => this.blockScreen.showError(err)
       )
   }

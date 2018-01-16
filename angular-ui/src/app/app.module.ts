@@ -28,6 +28,8 @@ import {RestRepositoryService} from "./services/rest/rest-repository.service";
 import {HttpClientModule} from "@angular/common/http";
 import { LoginDialogComponent } from './components/dialogs/login-dialog/login-dialog.component';
 import {AreYouSureComponent} from "./components/dialogs/are-you-sure/are-you-sure.component";
+import { CapitalizePipe } from './pipes/capitalize.pipe';
+import {A11yModule} from "@angular/cdk/a11y";
 
 @NgModule({
   declarations: [
@@ -39,7 +41,8 @@ import {AreYouSureComponent} from "./components/dialogs/are-you-sure/are-you-sur
     NotFoundComponent,
     UsersComponent,
     LoginDialogComponent,
-    AreYouSureComponent
+    AreYouSureComponent,
+    CapitalizePipe
   ],
   imports: [
     BrowserModule,
@@ -60,10 +63,11 @@ import {AreYouSureComponent} from "./components/dialogs/are-you-sure/are-you-sur
     MatListModule,
     MatDialogModule,
     MatInputModule,
-    MatFormFieldModule
+    MatFormFieldModule,
+    A11yModule
   ],
   entryComponents:[LoginDialogComponent, AreYouSureComponent],
-  exports: [MatButtonModule, MatCheckboxModule, MatSidenavModule, BrowserAnimationsModule ],
+  exports: [MatButtonModule, MatCheckboxModule, MatSidenavModule, BrowserAnimationsModule, A11yModule ],
   providers: [BlockScreenService, LoginService, RestRepositoryService],
   bootstrap: [AppComponent]
 })

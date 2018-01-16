@@ -16,13 +16,13 @@ export class RestRepositoryService {
 
   getItem(type: string, id: string): Observable<any> {
     return this.http
-      .get(`${BASE}/${type}/${id}`)
+      .get(`${BASE}/${type}/${id}`,{withCredentials: true})
       .pipe(map(res => (res as any).item))
   }
 
   getItems(type: string): Observable<any[]> {
       return this.http
-      .get(`${BASE}/${type}/all`)
+      .get(`${BASE}/${type}/all`,{withCredentials: true})
       .pipe(map(res => log((res as any).items)))
   }
 

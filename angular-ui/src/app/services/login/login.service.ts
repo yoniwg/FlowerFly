@@ -24,11 +24,11 @@ export class LoginService {
     return this.userRole != null
   }
 
-  constructor(private http : HttpClient) {}
+  constructor(private http : HttpClient) {  }
 
   login(cred: Credentials): Observable<void> {
     return this.http
-      .post(BASE + "/login",cred)
+      .post(BASE + "/login",cred,{withCredentials: true})
       .pipe(
         tap(res =>{
           this.username = cred.username;
@@ -39,15 +39,14 @@ export class LoginService {
       )
   }
 
-  logout(): Observable<void> {
+  logout(): Observable<any> {
     return this.http
-      .get(BASE + "/logout")
+      .get(BASE + "/logout",{withCredentials: true})
       .pipe(
         tap(_ => {
           this.userRole = null;
           this.username = null;
-        }),
-        map(_ => null)
+        })
       )
   }
 

@@ -62,6 +62,7 @@ function handleRemeberMe(req, res, next) {
 
 //sends the request through our local login/signin strategy, and if successful takes user to homepage, otherwise returns then to signin page
 router.post('/login', function(req, res, next) {
+    if (req.user) return; // avoid multiple login without logout
     passport.authenticate('local-signin', function(error, user) {
         if(error) {
             return res.status(500).json(error);
@@ -81,8 +82,8 @@ router.get('/logout', function(req, res) {
     const name = req.user.username;
     console.log("LOGGIN OUT " + name);
     req.logout();
-    res.redirect('/');
     req.session.notice = "You have successfully been logged out " + name + "!";
+    res.send("");
 });
 
 router.get('/isLoggedIn',function (req, res, next) {
