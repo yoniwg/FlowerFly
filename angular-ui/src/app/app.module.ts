@@ -27,7 +27,7 @@ import { UsersComponent } from './components/main-pages/users/users.component';
 import {RestRepositoryService} from "./services/rest/rest-repository.service";
 import {HttpClientModule} from "@angular/common/http";
 import { LoginDialogComponent } from './components/dialogs/login-dialog/login-dialog.component';
-
+import {AreYouSureComponent} from "./components/dialogs/are-you-sure/are-you-sure.component";
 
 @NgModule({
   declarations: [
@@ -38,7 +38,8 @@ import { LoginDialogComponent } from './components/dialogs/login-dialog/login-di
     BlockScreenComponent,
     NotFoundComponent,
     UsersComponent,
-    LoginDialogComponent
+    LoginDialogComponent,
+    AreYouSureComponent
   ],
   imports: [
     BrowserModule,
@@ -61,7 +62,7 @@ import { LoginDialogComponent } from './components/dialogs/login-dialog/login-di
     MatInputModule,
     MatFormFieldModule
   ],
-  entryComponents:[LoginDialogComponent],
+  entryComponents:[LoginDialogComponent, AreYouSureComponent],
   exports: [MatButtonModule, MatCheckboxModule, MatSidenavModule, BrowserAnimationsModule ],
   providers: [BlockScreenService, LoginService, RestRepositoryService],
   bootstrap: [AppComponent]

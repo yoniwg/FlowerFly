@@ -6,6 +6,7 @@ import {MatDialog, MatDialogRef, MatIconRegistry} from "@angular/material";
 import {delay, flatMap} from "rxjs/operators";
 import {tap} from "rxjs/operators";
 import {map} from "rxjs/operators";
+import {AreYouSureComponent} from "./components/dialogs/are-you-sure/are-you-sure.component";
 
 const FULL_MENU = [
   {"title": "Home", "msgId": "home", "link": "/", "accessAll" : true},
@@ -54,6 +55,19 @@ export class AppComponent implements OnInit {
           res => this.blockScreen.hide(),
             err => this.blockScreen.showError(err)
         )
+  }
+
+  showLogoutModal() {
+    const dialogRef = this.$dialog.open(AreYouSureComponent,{data : {action : "logout"}});
+    dialogRef.afterClosed()
+      .pipe(
+        tap(_ => this.blockScreen.showProgress()),
+        flatMap(answer => answer && this.$login.logout())
+      )
+      .subscribe(
+        res => this.blockScreen.hide(),
+        err => this.blockScreen.showError(err)
+      )
   }
 
 }

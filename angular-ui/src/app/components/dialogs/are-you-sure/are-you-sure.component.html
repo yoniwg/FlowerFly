@@ -1,0 +1,9 @@
+<h1 mat-dialog-title>{{data.action}}</h1>
+<div class="app-form" mat-dialog-content>
+  <p>Are you sure you want to {{data.action}}?</p>
+  <p>{{data.message}}</p>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="dialogRef.close(false)">No</button>
+  <button mat-button (click)="dialogRef.close(true)">Yes</button>
+</div>

@@ -18,7 +18,7 @@
       <mat-icon>person</mat-icon>
     </button>
     <mat-menu #loggedInMenu="matMenu">
-      <button mat-menu-item>
+      <button mat-menu-item (click)="showLogoutModal()">
         <mat-icon fontIcon="fa-sign-out" fontSet="fa"></mat-icon>
         <span>Log Out</span>
       </button>
