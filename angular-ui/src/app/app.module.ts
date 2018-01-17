@@ -5,12 +5,13 @@ import { AppRoutingModule } from './app-routing.module';
 
 import { AppComponent } from './app.component';
 import {
-  MatButtonModule, MatCardModule, MatCheckboxModule, MatDialogModule, MatFormFieldModule, MatIconModule, MatInputModule,
+  MatButtonModule, MatCardModule, MatCheckboxModule, MatDialogModule, MatExpansionModule, MatFormFieldModule,
+  MatIconModule, MatInputModule,
   MatListModule,
   MatMenuModule,
   MatNavList,
   MatProgressSpinnerModule,
-  MatSidenavModule,
+  MatSidenavModule, MatTableModule,
   MatToolbarModule
 } from "@angular/material";
 import { HomeComponent } from './components/main-pages/home/home.component';
@@ -30,6 +31,7 @@ import { LoginDialogComponent } from './components/dialogs/login-dialog/login-di
 import {AreYouSureComponent} from "./components/dialogs/are-you-sure/are-you-sure.component";
 import { CapitalizePipe } from './pipes/capitalize.pipe';
 import {A11yModule} from "@angular/cdk/a11y";
+import { GroupByPipe } from './pipes/group-by.pipe';
 
 @NgModule({
   declarations: [
@@ -42,13 +44,16 @@ import {A11yModule} from "@angular/cdk/a11y";
     UsersComponent,
     LoginDialogComponent,
     AreYouSureComponent,
-    CapitalizePipe
+    CapitalizePipe,
+    GroupByPipe
   ],
   imports: [
     BrowserModule,
     HttpClientModule,
     AppRoutingModule,
     MatButtonModule,
+    MatExpansionModule,
+    MatTableModule,
     MatCheckboxModule,
     MatSidenavModule,
     BrowserAnimationsModule,
@@ -67,7 +72,7 @@ import {A11yModule} from "@angular/cdk/a11y";
     A11yModule
   ],
   entryComponents:[LoginDialogComponent, AreYouSureComponent],
-  exports: [MatButtonModule, MatCheckboxModule, MatSidenavModule, BrowserAnimationsModule, A11yModule ],
+  exports: [MatButtonModule, MatCheckboxModule, MatSidenavModule, BrowserAnimationsModule, A11yModule, MatTableModule ],
   providers: [BlockScreenService, LoginService, RestRepositoryService],
   bootstrap: [AppComponent]
 })

@@ -12,7 +12,7 @@ passport.use('local-signin', new LocalStrategy(
             .where('password').equals(password)
             .exec(
             function (err,users) {
-                const user = users[0];
+                const user = (!!users && users.length >= 1) ? users[0] : undefined;
                 if (user) {
                     console.log("LOGGED IN AS: " + user.username);
                     req.session.success = 'You are successfully logged in ' + user.username + '!';
@@ -62,7 +62,9 @@ function handleRemeberMe(req, res, next) {
 
 //sends the request through our local login/signin strategy, and if successful takes user to homepage, otherwise returns then to signin page
 router.post('/login', function(req, res, next) {
-    if (req.user) return; // avoid multiple login without logout
+    if (req.user) { // avoid multiple login without logout
+        next(new Error("User is already signed in"));
+    }
     passport.authenticate('local-signin', function(error, user) {
         if(error) {
             return res.status(500).json(error);
@@ -72,7 +74,7 @@ router.post('/login', function(req, res, next) {
         }
         req.logIn(user, function (err) {
             if (err) { return next(err); }
-            return res.json({userRole: user.role});
+            return res.json(user);
         });
     })(req, res, next);
 });
@@ -86,9 +88,9 @@ router.get('/logout', function(req, res) {
     res.send("");
 });
 
-router.get('/isLoggedIn',function (req, res, next) {
+router.get('/whoIsLoggedIn',function (req, res, next) {
     if (req.user) {
-        res.json({userRole: req.user.role});
+        res.json(req.user);
     }else {
         res.json({})
     }

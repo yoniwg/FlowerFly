@@ -3,6 +3,8 @@ import {Observable} from "rxjs/Observable";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {catchError, map, tap} from "rxjs/operators";
 import {Credentials} from "./credentials";
+import {User} from "./user";
+import {UserRole} from "../../model/user-role.enum";
 
 
 const BASE = "http://localhost:3000/login";
@@ -17,11 +19,22 @@ const tapOnError = function(action: (Error) => void) {
 @Injectable()
 export class LoginService {
 
-  private userRole = null;
-  private username = null;
+  private userObj: User = new User();
 
   get isLoggedIn() {
-    return this.userRole != null
+    return this.userObj.username;
+  }
+
+  get username() {
+    return this.userObj.username;
+  }
+
+  get fullName() {
+    return this.userObj.fullName;
+  }
+
+  get userRole() {
+    return this.userObj.role;
   }
 
   constructor(private http : HttpClient) {  }
@@ -31,8 +44,7 @@ export class LoginService {
       .post(BASE + "/login",cred,{withCredentials: true})
       .pipe(
         tap(res =>{
-          this.username = cred.username;
-          this.userRole = (res as any).userRole
+          this.userObj = (res as User)
         })
         // , tapOnError(err => this.user = null)
         , map(_ => null)
@@ -44,15 +56,17 @@ export class LoginService {
       .get(BASE + "/logout",{withCredentials: true})
       .pipe(
         tap(_ => {
-          this.userRole = null;
-          this.username = null;
+          this.userObj = new User();
         })
       )
   }
 
-  hasPermission(permissions): boolean {
-    return true
+  setUserIfSignedIn() : void{
+    this.http
+      .get(BASE + "/whoIsLoggedIn",{withCredentials: true})
+      .subscribe(
+        res => this.userObj = (res as User),
+          err => this.userObj = null)
   }
-
 
 }

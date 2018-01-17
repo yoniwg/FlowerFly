@@ -11,3 +11,15 @@
 .mat-icon {
   @include mat-icon-size();
 }
+
+.main-title{
+  font-size: x-large;
+  font-family: "Cambria Math", serif;
+  margin-right: 1.5vw;
+  margin-left: 0.5vw;
+}
+
+.user-full-name{
+  text-align: center;
+  font-size: large;
+}

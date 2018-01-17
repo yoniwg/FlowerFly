@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {RestRepositoryService} from "../../../services/rest/rest-repository.service";
 import {BlockScreenService} from "../../../services/screen-block/screen-block.service";
 import {delay} from "rxjs/operators/delay";
+import {UserModel} from "../../../model/user-model";
+import {MatSort, MatTableDataSource} from "@angular/material";
 
 @Component({
   selector: 'app-users',
@@ -15,8 +17,12 @@ export class UsersComponent implements OnInit {
     private blockScreen: BlockScreenService
     ) { }
 
-  items: any[];
+  items: UserModel[];
+  displayedColumns = Object.keys(new UserModel());
 
+  createDataSource(data) {
+    return new MatTableDataSource<UserModel>(data);
+  }
   ngOnInit() {
     this.blockScreen.showProgress();
     this.rest
@@ -24,7 +30,7 @@ export class UsersComponent implements OnInit {
       .pipe(delay(2000))
       .subscribe(
         items => {
-          this.items = items;
+          this.items = items as Array<UserModel>;
           this.blockScreen.hide()
         },
         err => {

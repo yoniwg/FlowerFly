@@ -7,14 +7,15 @@ import {delay, flatMap} from "rxjs/operators";
 import {tap} from "rxjs/operators";
 import {map} from "rxjs/operators";
 import {AreYouSureComponent} from "./components/dialogs/are-you-sure/are-you-sure.component";
-
+import {UserRole} from "./model/user-role.enum";
+const allUsers = [UserRole.CUSTOMER, UserRole.EMPLOYEE, UserRole.PROVIDER, UserRole.MANAGER];
 const FULL_MENU = [
-  {"title": "Home", "msgId": "home", "link": "/", "accessAll" : true},
-  {"title": "Flowers Catalog", "msgId": "flowers_catalog", "link": "/flowers", "loggedInOnly": true},
-  {"title": "Users Management", "msgId": "users_management", "link": "/users", "managerOnly" : true, "employeeOnly": true},
-  {"title": "Branches Management", "msgId": "branches_management", "link": "/branches", "managerOnly": true},
-  {"title": "About Company", "msgId": "about_company", "link": "/about", "accessAll" : true},
-  {"title": "Contact", "msgId": "contact", "link": "/contact", "accessAll" : true}
+  {title: "Home", msgId: "home", link: "/", accessOnly: null},
+  {title: "Flowers Catalog", msgId: "flowers_catalog", link: "/flowers", accessOnly: allUsers},
+  {title: "Users Management", msgId: "users_management", link: "/users", accessOnly: [UserRole.EMPLOYEE, UserRole.MANAGER]},
+  {title: "Branches Management", msgId: "branches_management", link: "/branches", accessOnly: [UserRole.MANAGER]},
+  {title: "About Company", msgId: "about_company", link: "/about", accessOnly: null},
+  {title: "Contact", msgId: "contact", link: "/contact", accessOnly: null}
 ];
 
 
@@ -31,13 +32,13 @@ export class AppComponent implements OnInit {
     private $dialog: MatDialog) {}
 
   ngOnInit() {
-
+    this.$login.setUserIfSignedIn();
   }
 
-  title = 'Flower Fly';
+  mainTitle = 'Flower Fly';
 
   get menu() {
-    return FULL_MENU.filter(item => this.$login.hasPermission(item))
+    return FULL_MENU.filter(item => item.accessOnly == null ||  item.accessOnly.indexOf(this.$login.userRole) != -1)
   }
 
   showLoginModal() {

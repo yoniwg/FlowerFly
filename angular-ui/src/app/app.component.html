@@ -2,8 +2,7 @@
 <mat-sidenav-container>
 
   <mat-toolbar color="primary">
-    <span>Flowers Fly</span>
-    <span class="example-spacer"></span>
+    <span class="main-title">{{mainTitle}}</span>
     <button mat-button
             *ngFor="let item of menu"
             routerLink="{{item.link}}">
@@ -18,6 +17,7 @@
       <mat-icon>person</mat-icon>
     </button>
     <mat-menu #loggedInMenu="matMenu">
+      <h2 class="user-full-name">{{$login.fullName}}</h2>
       <button mat-menu-item (click)="showLogoutModal()">
         <mat-icon fontIcon="fa-sign-out" fontSet="fa"></mat-icon>
         <span>Log Out</span>
@@ -34,8 +34,8 @@
   </mat-menu>
 
   <div>
-    <router-outlet *ngIf="!blockScreen.shown"></router-outlet>
-    <app-block-screen *ngIf="blockScreen.shown"></app-block-screen>
+    <router-outlet></router-outlet>
+    <!--<app-block-screen *ngIf="blockScreen.shown"></app-block-screen>-->
   </div>
 
 </mat-sidenav-container>
