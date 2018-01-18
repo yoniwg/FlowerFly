@@ -1,10 +1,11 @@
 import {UserRole} from "./user-role.enum";
 
 export class UserModel {
-  public username: string = null;
-  public role: UserRole = null;
-  public fullName: string = null;
-  public address: string = null;
-  public flowersIds: number[] = null;
-  public branchId: number = null;
+  _id: string;
+  username: string = null;
+  role: UserRole = null;
+  fullName: string = null;
+  address: string = null;
+  flowersIds: number[] = null;
+  branchId: number = null;
 }

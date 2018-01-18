@@ -18,7 +18,8 @@ export class UsersComponent implements OnInit {
     ) { }
 
   items: UserModel[];
-  displayedColumns = Object.keys(new UserModel());
+  groupByCol = "role";
+  displayedColumns = [...Object.keys(new UserModel()).filter(e => e != this.groupByCol), "edit"];
 
   createDataSource(data) {
     return new MatTableDataSource<UserModel>(data);
@@ -27,7 +28,7 @@ export class UsersComponent implements OnInit {
     this.blockScreen.showProgress();
     this.rest
       .getItems("User")
-      .pipe(delay(2000))
+      //.pipe(delay(2000))
       .subscribe(
         items => {
           this.items = items as Array<UserModel>;
@@ -37,6 +38,11 @@ export class UsersComponent implements OnInit {
           this.blockScreen.showError(err)
         }
       )
+  }
+
+  editRow(row: UserModel){
+    console.log("edit " + row._id);
+    // TODO editor service
   }
 
 }

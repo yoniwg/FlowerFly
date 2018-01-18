@@ -34,6 +34,7 @@ import {A11yModule} from "@angular/cdk/a11y";
 import { GroupByPipe } from './pipes/group-by.pipe';
 import { FlowersComponent } from './components/main-pages/flowers/flowers.component';
 import { SplitCamelCasePipe } from './pipes/split-camel-case.pipe';
+import { BranchesComponent } from './components/main-pages/branches/branches.component';
 
 @NgModule({
   declarations: [
@@ -49,7 +50,8 @@ import { SplitCamelCasePipe } from './pipes/split-camel-case.pipe';
     CapitalizePipe,
     GroupByPipe,
     FlowersComponent,
-    SplitCamelCasePipe
+    SplitCamelCasePipe,
+    BranchesComponent
   ],
   imports: [
     BrowserModule,

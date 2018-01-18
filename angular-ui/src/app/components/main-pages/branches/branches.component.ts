@@ -1,38 +1,39 @@
 import { Component, OnInit } from '@angular/core';
 import {RestRepositoryService} from "../../../services/rest/rest-repository.service";
 import {BlockScreenService} from "../../../services/screen-block/screen-block.service";
+import {BranchModel} from "../../../model/branch-model";
 import {MatTableDataSource} from "@angular/material";
 import {delay} from "rxjs/operators";
-import {FlowerModel} from "../../../model/flower-model";
 
 @Component({
-  selector: 'app-flowers',
-  templateUrl: './flowers.component.html',
-  styleUrls: ['./flowers.component.scss']
+  selector: 'app-branches',
+  templateUrl: './branches.component.html',
+  styleUrls: ['./branches.component.scss']
 })
-export class FlowersComponent implements OnInit {
+export class BranchesComponent implements OnInit {
 
   constructor(
     private rest: RestRepositoryService,
     private blockScreen: BlockScreenService
   ) { }
 
-  items: FlowerModel[];
+  items: BranchModel[];
   groupByCol = "role";
-  displayedColumns = [...Object.keys(new FlowerModel()).filter(e => e != this.groupByCol), "edit"];
+  displayedColumns = [...Object.keys(new BranchModel()).filter(e => e != this.groupByCol), "edit"];
 
 
   createDataSource(data) {
-    return new MatTableDataSource<FlowerModel>(data);
+    return new MatTableDataSource<BranchModel>(data);
   }
+
   ngOnInit() {
     this.blockScreen.showProgress();
     this.rest
-      .getItems("Flower")
+      .getItems("Branch")
       //.pipe(delay(2000))
       .subscribe(
         items => {
-          this.items = items as Array<FlowerModel>;
+          this.items = items as Array<BranchModel>;
           this.blockScreen.hide()
         },
         err => {
@@ -41,9 +42,8 @@ export class FlowersComponent implements OnInit {
       )
   }
 
-
-  editRow(row: FlowerModel){
-    console.log("edit " + row._id);
+  editRow(row: BranchModel){
+    console.log("edit  " + row._id);
     // TODO editor service
   }
 

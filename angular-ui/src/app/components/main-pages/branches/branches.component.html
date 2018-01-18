@@ -1,0 +1,17 @@
+<mat-table #table [dataSource]="createDataSource(items)" matSort>
+
+  <ng-container *ngFor="let col of displayedColumns" [matColumnDef]="col">
+    <mat-header-cell *matHeaderCellDef>
+      <span *ngIf="col != 'edit'">{{col | splitCamelCase | capitalize}}</span>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let row" [ngClass]="{'text-align-right': col == 'edit' }">
+      <span *ngIf="col != 'edit'">{{row[col]}}</span>
+      <button class="edit-icon" mat-icon-button *ngIf="col == 'edit'" (click)="editRow(row)">
+        <mat-icon>border_color</mat-icon>
+      </button>
+    </mat-cell>
+  </ng-container>
+
+  <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+  <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+</mat-table>
