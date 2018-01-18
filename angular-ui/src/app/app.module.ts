@@ -32,6 +32,8 @@ import {AreYouSureComponent} from "./components/dialogs/are-you-sure/are-you-sur
 import { CapitalizePipe } from './pipes/capitalize.pipe';
 import {A11yModule} from "@angular/cdk/a11y";
 import { GroupByPipe } from './pipes/group-by.pipe';
+import { FlowersComponent } from './components/main-pages/flowers/flowers.component';
+import { SplitCamelCasePipe } from './pipes/split-camel-case.pipe';
 
 @NgModule({
   declarations: [
@@ -45,7 +47,9 @@ import { GroupByPipe } from './pipes/group-by.pipe';
     LoginDialogComponent,
     AreYouSureComponent,
     CapitalizePipe,
-    GroupByPipe
+    GroupByPipe,
+    FlowersComponent,
+    SplitCamelCasePipe
   ],
   imports: [
     BrowserModule,

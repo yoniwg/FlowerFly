@@ -1,8 +1,8 @@
 <mat-accordion>
-  <mat-expansion-panel *ngFor="let item of items | groupBy:'role'">
+  <mat-expansion-panel *ngFor="let item of items | groupBy:'color'">
     <mat-expansion-panel-header>
       <mat-panel-title>
-        {{item.key}}s
+        {{item.key}}
       </mat-panel-title>
     </mat-expansion-panel-header>
     <div>
