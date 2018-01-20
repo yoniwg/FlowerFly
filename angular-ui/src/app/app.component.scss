@@ -31,3 +31,18 @@
 .text-align-right{
   text-align: right;
 }
+
+.full-screen-dialog .mat-dialog-container {
+  max-width: none;
+  width: 100vw;
+  height: 100vh;
+  opacity: 50;
+}
+
+.top-navbar {
+  overflow: hidden;
+  position: sticky; /* Set the navbar to fixed position */
+  top: 0; /* Position the navbar at the top of the page */
+  width: 100%; /* Full width */
+  z-index: 1001;
+}

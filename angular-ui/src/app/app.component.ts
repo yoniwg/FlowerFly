@@ -1,5 +1,4 @@
 import {Component, OnInit} from '@angular/core';
-import {BlockScreenService} from "./services/screen-block/screen-block.service";
 import {LoginService} from "./services/login/login.service";
 import {LoginDialogComponent} from "./components/dialogs/login-dialog/login-dialog.component";
 import {MatDialog, MatDialogRef, MatIconRegistry} from "@angular/material";
@@ -8,6 +7,7 @@ import {tap} from "rxjs/operators";
 import {map} from "rxjs/operators";
 import {AreYouSureComponent} from "./components/dialogs/are-you-sure/are-you-sure.component";
 import {UserRole} from "./model/user-role.enum";
+import {BlockScreenService} from "./services/block-screen/block-screen.service";
 const allUsers = [UserRole.CUSTOMER, UserRole.EMPLOYEE, UserRole.PROVIDER, UserRole.MANAGER];
 const FULL_MENU = [
   {title: "Home", msgId: "home", link: "/", accessOnly: null},
@@ -27,8 +27,8 @@ const FULL_MENU = [
 export class AppComponent implements OnInit {
 
   constructor(
-    private blockScreen: BlockScreenService,
     private $login: LoginService,
+    private $blockScreen: BlockScreenService,
     private $dialog: MatDialog) {}
 
   ngOnInit() {
@@ -45,26 +45,18 @@ export class AppComponent implements OnInit {
       const dialogRef = this.$dialog.open(LoginDialogComponent);
       dialogRef.afterClosed()
         .pipe(
-          tap(_ => this.blockScreen.showProgress()),
           flatMap(cred => cred && this.$login.login(cred))
         )
-        .subscribe(
-          res => this.blockScreen.hide(),
-            err => this.blockScreen.showError(err)
-        )
+        .subscribe()
   }
 
   showLogoutModal() {
     const dialogRef = this.$dialog.open(AreYouSureComponent,{data : {action : "logout"}});
     dialogRef.afterClosed()
       .pipe(
-        tap(_ => this.blockScreen.showProgress()),
         flatMap(answer => answer && this.$login.logout())
       )
-      .subscribe(
-        _ => this.blockScreen.hide(),
-        err => this.blockScreen.showError(err)
-      )
+      .subscribe()
   }
 
 }

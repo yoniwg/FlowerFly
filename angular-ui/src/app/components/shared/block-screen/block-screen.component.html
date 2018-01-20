@@ -1,0 +1,11 @@
+<div>
+  <mat-spinner class="flex-center" *ngIf="data.showProgress"></mat-spinner>
+  <h2 *ngIf="data.title">{{data.title}}</h2>
+  <h3 *ngIf="data.message">{{data.message}}</h3>
+  <button mat-button *ngIf="data.buttonText && data.onClick"></button>
+</div>
+<!--<h2>title: {{blockScreen.title}}</h2>-->
+<!--<p>message: {{blockScreen.message}}</p>-->
+<!--<p>buttonTitle: {{blockScreen.buttonTitle}}</p>-->
+<!--<p>onClick: <a onclick="blockScreen.onClick()">{{blockScreen.onClick}}</a></p>-->
+<!--<p *ngIf="'TODO this is not the home page'">Return to <a routerLink="">Home Page</a></p>-->

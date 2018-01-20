@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import {HomeComponent} from "./components/main-pages/home/home.component";
 import {AboutComponent} from "./components/main-pages/about/about.component";
-import {UserDetailsComponent} from "./components/dialogs/user-details/user-details.component";
 import {NotFoundComponent} from "./components/shared/not-found/not-found.component";
 import {UsersComponent} from "./components/main-pages/users/users.component";
 import {FlowersComponent} from "./components/main-pages/flowers/flowers.component";
@@ -15,7 +14,6 @@ const routes: Routes = [
   {path: 'users', component: UsersComponent},
   {path: 'flowers', component: FlowersComponent},
   {path: 'branches', component: BranchesComponent},
-  {path: 'user/:id', component: UserDetailsComponent},
   {path: '**', component: NotFoundComponent}
 ];
 

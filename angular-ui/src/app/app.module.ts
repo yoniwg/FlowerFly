@@ -18,12 +18,10 @@ import { HomeComponent } from './components/main-pages/home/home.component';
 import { AboutComponent } from './components/main-pages/about/about.component';
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {FormsModule} from "@angular/forms";
-import { UserDetailsComponent } from './components/dialogs/user-details/user-details.component';
-import {BlockScreenService} from "./services/screen-block/screen-block.service";
-import { BlockScreenComponent } from './components/shared/screen-block/screen-block.component';
+import {BlockScreenService} from "./services/block-screen/block-screen.service";
+import { BlockScreenComponent } from './components/shared/block-screen/block-screen.component';
 import {LoginService} from "./services/login/login.service";
 import { NotFoundComponent } from './components/shared/not-found/not-found.component';
-import {HttpModule} from "@angular/http";
 import { UsersComponent } from './components/main-pages/users/users.component';
 import {RestRepositoryService} from "./services/rest/rest-repository.service";
 import {HttpClientModule} from "@angular/common/http";
@@ -35,13 +33,13 @@ import { GroupByPipe } from './pipes/group-by.pipe';
 import { FlowersComponent } from './components/main-pages/flowers/flowers.component';
 import { SplitCamelCasePipe } from './pipes/split-camel-case.pipe';
 import { BranchesComponent } from './components/main-pages/branches/branches.component';
+import { MDBBootstrapModule, MDBRootModule} from 'angular-bootstrap-md/index'
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
     AboutComponent,
-    UserDetailsComponent,
     BlockScreenComponent,
     NotFoundComponent,
     UsersComponent,
@@ -75,9 +73,10 @@ import { BranchesComponent } from './components/main-pages/branches/branches.com
     MatDialogModule,
     MatInputModule,
     MatFormFieldModule,
+    MDBBootstrapModule.forRoot(),
     A11yModule
   ],
-  entryComponents:[LoginDialogComponent, AreYouSureComponent],
+  entryComponents:[LoginDialogComponent, AreYouSureComponent, BlockScreenComponent],
   exports: [MatButtonModule, MatCheckboxModule, MatSidenavModule, BrowserAnimationsModule, A11yModule, MatTableModule ],
   providers: [BlockScreenService, LoginService, RestRepositoryService],
   bootstrap: [AppComponent]

@@ -1,7 +1,7 @@
 <!--The content below is only a placeholder and can be replaced.-->
-<mat-sidenav-container>
+<div>
+  <mat-toolbar color="primary" class="top-navbar mat-elevation-z4">
 
-  <mat-toolbar color="primary">
     <span class="main-title">{{mainTitle}}</span>
     <button mat-button
             *ngFor="let item of menu"
@@ -33,9 +33,10 @@
             routerLink={{item.link}}>{{item.title}}</button>
   </mat-menu>
 
-  <div>
-    <router-outlet></router-outlet>
-    <!--<app-block-screen *ngIf="blockScreen.shown"></app-block-screen>-->
-  </div>
+  <div class="router-outlet-container">
 
-</mat-sidenav-container>
+    <router-outlet></router-outlet>
+    <app-block-screen *ngIf="$blockScreen.data" [data]="$blockScreen.data"></app-block-screen>
+
+  </div>
+</div>

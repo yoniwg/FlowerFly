@@ -9,12 +9,6 @@ import {UserRole} from "../../model/user-role.enum";
 
 const BASE = "http://localhost:3000/login";
 
-const tapOnError = function(action: (Error) => void) {
-  return catchError(err => {
-    action(err);
-    return Observable.throw(err);
-  });
-};
 
 @Injectable()
 export class LoginService {

@@ -1,9 +1,9 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {RestRepositoryService} from "../../../services/rest/rest-repository.service";
-import {BlockScreenService} from "../../../services/screen-block/screen-block.service";
-import {delay} from "rxjs/operators/delay";
+import {BlockScreenService} from "../../../services/block-screen/block-screen.service";
 import {UserModel} from "../../../model/user-model";
-import {MatSort, MatTableDataSource} from "@angular/material";
+import {MatTableDataSource} from "@angular/material";
+import {delay} from "rxjs/operators";
 
 @Component({
   selector: 'app-users',
@@ -15,7 +15,7 @@ export class UsersComponent implements OnInit {
   constructor(
     private rest: RestRepositoryService,
     private blockScreen: BlockScreenService
-    ) { }
+  ) { }
 
   items: UserModel[];
   groupByCol = "role";
@@ -25,19 +25,11 @@ export class UsersComponent implements OnInit {
     return new MatTableDataSource<UserModel>(data);
   }
   ngOnInit() {
-    this.blockScreen.showProgress();
-    this.rest
-      .getItems("User")
-      //.pipe(delay(2000))
-      .subscribe(
-        items => {
-          this.items = items as Array<UserModel>;
-          this.blockScreen.hide()
-        },
-        err => {
-          this.blockScreen.showError(err)
-        }
-      )
+    this.blockScreen.wrap(
+      this.rest
+        .getItems("User")
+        .pipe(delay(2000))
+    ).subscribe(items => this.items = items as Array<UserModel>)
   }
 
   editRow(row: UserModel){

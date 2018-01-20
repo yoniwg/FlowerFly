@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import {RestRepositoryService} from "../../../services/rest/rest-repository.service";
-import {BlockScreenService} from "../../../services/screen-block/screen-block.service";
+import {BlockScreenService} from "../../../services/block-screen/block-screen.service";
 import {BranchModel} from "../../../model/branch-model";
 import {MatTableDataSource} from "@angular/material";
 import {delay} from "rxjs/operators";
+import {Observable} from "rxjs/Observable";
 
 @Component({
   selector: 'app-branches',
@@ -27,7 +28,7 @@ export class BranchesComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.blockScreen.showProgress();
+    this.blockScreen. show();
     this.rest
       .getItems("Branch")
       //.pipe(delay(2000))
@@ -35,9 +36,6 @@ export class BranchesComponent implements OnInit {
         items => {
           this.items = items as Array<BranchModel>;
           this.blockScreen.hide()
-        },
-        err => {
-          this.blockScreen.showError(err)
         }
       )
   }
