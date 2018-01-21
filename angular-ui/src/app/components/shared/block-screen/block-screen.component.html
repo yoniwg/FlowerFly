@@ -1,5 +1,5 @@
-<div>
-  <mat-spinner class="flex-center" *ngIf="data.showProgress"></mat-spinner>
+<div class="block-screen">
+  <mat-spinner class="flex-center" *ngIf="data.showProgress" ></mat-spinner>
   <h2 *ngIf="data.title">{{data.title}}</h2>
   <h3 *ngIf="data.message">{{data.message}}</h3>
   <button mat-button *ngIf="data.buttonText && data.onClick"></button>

@@ -19,14 +19,9 @@ router.delete('/:entity/:id', (req, res, next) => {
     const id = req.params.id;
     const entity = req.params.entity;
 
-    db.deleteEntity(entity, id).then(res=> {
-            if (res && res.id == id && !res.isActive) {
-                res.status(httpCodes.success).json({});
-            }else {
-                res.status(httpCodes.genericFailure).json({});
-            }
-        }
-    );
+    db.deleteEntity(entity, id).then(_ => {
+        res.status(httpCodes.success).json({});
+    }).catch(next);
 
 });
 

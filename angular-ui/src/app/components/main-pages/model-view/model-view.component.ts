@@ -7,6 +7,7 @@ import {MessageComponent, Severity} from "../../dialogs/message/message.componen
 import {Model} from "../../../model/model";
 import {ActivatedRoute} from "@angular/router";
 import {AreYouSureComponent} from "../../dialogs/are-you-sure/are-you-sure.component";
+import {delay} from "rxjs/operators";
 
 
 @Component({
@@ -40,6 +41,7 @@ export class ModelViewComponent<T extends Model> implements OnInit {
     this.$blockScreen.wrap(
       this.$rest
         .getItems(this.modelName)
+        .pipe(delay(2000))
     ).subscribe(items => this.items = items as Array<T>)
   }
 

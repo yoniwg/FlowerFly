@@ -67,7 +67,13 @@ class Database {
         return this.getEntity(entityName,id).then(function (entity) {
             if (entity) {
                 entity.isActive = false;
-                return entity.save();
+                let modified = entity.save();
+                if (!(modified && modified.id === id && !modified.isActive)) {
+                    const err = new Error("haim greenstein");
+                    err.code = httpCodes.genericFailure;
+                    throw err
+                }
+                return modifyed;
             }
         });
     };

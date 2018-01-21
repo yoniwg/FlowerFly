@@ -25,12 +25,6 @@ export class BlockScreenService {
   data: BlockScreenComponentData;
 
   private showData(data: BlockScreenComponentData){
-    // this.hide();
-    /*this.dialogRef = this.$dialog.open(BlockScreenComponent,
-      {
-        data : data,
-        panelClass : 'full-screen-dialog'
-      });*/
     setTimeout(() => this.data = data, 0)
   }
 
