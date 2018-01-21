@@ -6,14 +6,18 @@ import {NotFoundComponent} from "./components/shared/not-found/not-found.compone
 import {UsersComponent} from "./components/main-pages/users/users.component";
 import {FlowersComponent} from "./components/main-pages/flowers/flowers.component";
 import {BranchesComponent} from "./components/main-pages/branches/branches.component";
+import {ModelViewComponent} from "./components/main-pages/model-view/model-view.component";
+import {UserModel} from "./model/user-model";
+import {FlowerModel} from "./model/flower-model";
+import {BranchModel} from "./model/branch-model";
 
 const routes: Routes = [
   {path: '', redirectTo: 'home', pathMatch: 'full'},
   {path: 'home', component: HomeComponent},
   {path: 'about', component: AboutComponent},
-  {path: 'users', component: UsersComponent},
-  {path: 'flowers', component: FlowersComponent},
-  {path: 'branches', component: BranchesComponent},
+  {path: 'users', component: ModelViewComponent, data: {modelName:"User", modelType:UserModel, groupByCol:"role"}},
+  {path: 'flowers', component: ModelViewComponent, data: {modelName:"Flower", modelType:FlowerModel, groupByCol:"color"}},
+  {path: 'branches', component: ModelViewComponent, data: {modelName:"Branch", modelType:BranchModel}},
   {path: '**', component: NotFoundComponent}
 ];
 

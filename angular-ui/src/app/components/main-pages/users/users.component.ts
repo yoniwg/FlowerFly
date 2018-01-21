@@ -2,8 +2,10 @@ import {Component, OnInit, ViewChild} from '@angular/core';
 import {RestRepositoryService} from "../../../services/rest/rest-repository.service";
 import {BlockScreenService} from "../../../services/block-screen/block-screen.service";
 import {UserModel} from "../../../model/user-model";
-import {MatTableDataSource} from "@angular/material";
+import {MatDialog, MatTableDataSource} from "@angular/material";
 import {delay} from "rxjs/operators";
+import {EditModelComponent} from "../../dialogs/edit-model/edit-model.component";
+import {MessageComponent, Severity} from "../../dialogs/message/message.component";
 
 @Component({
   selector: 'app-users',
@@ -14,8 +16,8 @@ export class UsersComponent implements OnInit {
 
   constructor(
     private rest: RestRepositoryService,
-    private blockScreen: BlockScreenService
-  ) { }
+    private blockScreen: BlockScreenService,
+    private dialogService : MatDialog) { }
 
   items: UserModel[];
   groupByCol = "role";
@@ -28,13 +30,23 @@ export class UsersComponent implements OnInit {
     this.blockScreen.wrap(
       this.rest
         .getItems("User")
-        .pipe(delay(2000))
     ).subscribe(items => this.items = items as Array<UserModel>)
   }
 
   editRow(row: UserModel){
     console.log("edit " + row._id);
-    // TODO editor service
+    const editorRef = this.dialogService.open(EditModelComponent, {data: row});
+    editorRef.afterClosed().subscribe(newRow =>
+      this.rest.putItem("User", newRow).subscribe(
+        res => this.dialogService.open(MessageComponent,
+          {data:{severity:Severity.FINE, message: "User was updated successfully"}}).afterClosed()
+          .subscribe(
+            _  => this.ngOnInit()
+        ),
+        err => this.dialogService.open(MessageComponent,
+          {data:{severity:Severity.ERROR, message: "User wasn't updated successfully"}})
+      )
+    )
   }
 
 }

@@ -1,0 +1,7 @@
+<h1 mat-dialog-title [ngClass]="data.severity">{{data.title | capitalize}}</h1>
+<div class="app-form" mat-dialog-content>
+  <p>{{data.message}}</p>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="dialogRef.close()" cdkFocusInitial>OK</button>
+</div>

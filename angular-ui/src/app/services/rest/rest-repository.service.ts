@@ -26,4 +26,9 @@ export class RestRepositoryService {
       .pipe(map(res => log((res as any).items)))
   }
 
+  putItem(type: string, data: any): Observable<any> {
+    return this.http
+      .put(`${BASE}/${type}/${data._id}`,data,{withCredentials: true})
+  }
+
 }

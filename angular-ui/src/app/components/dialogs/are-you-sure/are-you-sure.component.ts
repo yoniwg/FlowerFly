@@ -10,9 +10,9 @@ export class AreYouSureComponent implements OnInit {
 
   constructor(
     private dialogRef: MatDialogRef<AreYouSureComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any
+    @Inject(MAT_DIALOG_DATA) public data: {action: string, message: string}
   ) {
-    data.message = (data.message) ? (data.message + ".") : ""
+    data.message = (data.message) ? (data.message + (data.message.endsWith(".")?"":".")) : ""
   }
   ngOnInit() {
   }

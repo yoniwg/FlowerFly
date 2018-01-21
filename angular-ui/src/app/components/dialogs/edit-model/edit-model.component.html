@@ -1,0 +1,23 @@
+<div class="editor-form">
+  <form class="editor-form" [formGroup]="dataGroup">
+
+  <mat-form-field *ngFor="let entry of data | entries | filterUnderScore">
+    <input matInput placeholder="{{entry.key | splitCamelCase | capitalize}}"
+           [value]="entry.value" formControlName="{{entry.key}}">
+  </mat-form-field>
+
+  <!--<mat-form-field-->
+    <!--[hideRequiredMarker]="options.value.hideRequired"-->
+    <!--[floatLabel]="options.value.floatLabel">-->
+    <!--<mat-select required>-->
+      <!--<mat-option>&#45;&#45; None &#45;&#45;</mat-option>-->
+      <!--<mat-option value="option">Option</mat-option>-->
+    <!--</mat-select>-->
+    <!--<mat-placeholder><mat-icon>favorite</mat-icon> <b> Fancy</b> <i> placeholder</i></mat-placeholder>-->
+  <!--</mat-form-field>-->
+  </form>
+  <mat-dialog-actions>
+    <button mat-button [mat-dialog-close]="dataGroup.value">Save</button>
+    <button mat-button (click)="dialogRef.close()">Cancel</button>
+  </mat-dialog-actions>
+</div>
