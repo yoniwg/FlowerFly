@@ -7,7 +7,8 @@ const db = require('../model/database');
 const httpCodes = {
     badReq : 400,
     success: 201,
-    unprocEntity: 422
+    unprocEntity: 422,
+    genericFailure: 500
 };
 
 ///////////////////
@@ -18,11 +19,11 @@ router.delete('/:entity/:id', (req, res, next) => {
     const id = req.params.id;
     const entity = req.params.entity;
 
-    db.deleteEntity(entity, id).then(err=> {
-            if (!err) {
+    db.deleteEntity(entity, id).then(res=> {
+            if (res && res.id == id && !res.isActive) {
                 res.status(httpCodes.success).json({});
             }else {
-                // TODO handle error
+                res.status(httpCodes.genericFailure).json({});
             }
         }
     );

@@ -14,7 +14,7 @@
           </mat-header-cell>
           <mat-cell *matCellDef="let row" [ngClass]="{'text-align-right': col == 'edit' }">
             <span *ngIf="col != 'edit'">{{row[col]}}</span>
-            <button class="edit-icon" mat-icon-button *ngIf="col == 'edit'" (click)="editRow(row)">
+            <button class="action-icon" mat-icon-button *ngIf="col == 'edit'" (click)="editRow(row)">
               <mat-icon>border_color</mat-icon>
             </button>
           </mat-cell>

@@ -1,1 +1,15 @@
 @import "../../../app.component";
+
+.action-icon{
+  color: blue;
+}
+
+.actions-cell{
+  text-align: right;
+}
+
+.right-fab{
+  right: 40px;
+  bottom: 40px;
+  position: fixed !important;
+}

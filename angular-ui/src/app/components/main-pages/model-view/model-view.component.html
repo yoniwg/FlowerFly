@@ -1,4 +1,7 @@
 <div>
+  <button mat-fab class="right-fab" (click)="addItem()">
+    <mat-icon>add</mat-icon>
+  </button>
   <mat-accordion *ngIf="groupByCol">
     <mat-expansion-panel *ngFor="let item of items | groupBy:groupByCol">
       <mat-expansion-panel-header>
@@ -8,16 +11,20 @@
       </mat-expansion-panel-header>
       <div>
         <mat-table #table [dataSource]="createDataSource(item.value)" matSort>
-
           <ng-container *ngFor="let col of displayedColumns" [matColumnDef]="col">
             <mat-header-cell *matHeaderCellDef>
-              <span *ngIf="col != 'edit'">{{col | splitCamelCase | capitalize}}</span>
+              <span *ngIf="col != 'actions'">{{col | splitCamelCase | capitalize}}</span>
             </mat-header-cell>
-            <mat-cell *matCellDef="let row" [ngClass]="{'text-align-right': col == 'edit' }">
-              <span *ngIf="col != 'edit'">{{row[col]}}</span>
-              <button class="edit-icon" mat-icon-button *ngIf="col == 'edit'" (click)="editRow(row)">
-                <mat-icon>border_color</mat-icon>
-              </button>
+            <mat-cell *matCellDef="let row">
+              <span *ngIf="col != 'actions'">{{row[col]}}</span>
+              <div *ngIf="col == 'actions'" class="actions-cell">
+                <button class="action-icon" mat-icon-button (click)="editRow(row)">
+                  <mat-icon>border_color</mat-icon>
+                </button>
+                <button class="action-icon" mat-icon-button (click)="deleteRow(row)">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
             </mat-cell>
           </ng-container>
 
@@ -35,7 +42,7 @@
       </mat-header-cell>
       <mat-cell *matCellDef="let row" [ngClass]="{'text-align-right': col == 'edit' }">
         <span *ngIf="col != 'edit'">{{row[col]}}</span>
-        <button class="edit-icon" mat-icon-button *ngIf="col == 'edit'" (click)="editRow(row)">
+        <button class="action-icon" mat-icon-button *ngIf="col == 'edit'" (click)="editRow(row)">
           <mat-icon>border_color</mat-icon>
         </button>
       </mat-cell>

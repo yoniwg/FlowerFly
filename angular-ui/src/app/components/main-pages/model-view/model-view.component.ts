@@ -6,6 +6,8 @@ import {EditModelComponent} from "../../dialogs/edit-model/edit-model.component"
 import {MessageComponent, Severity} from "../../dialogs/message/message.component";
 import {Model} from "../../../model/model";
 import {ActivatedRoute} from "@angular/router";
+import {AreYouSureComponent} from "../../dialogs/are-you-sure/are-you-sure.component";
+
 
 @Component({
   selector: 'app-model-view',
@@ -33,7 +35,8 @@ export class ModelViewComponent<T extends Model> implements OnInit {
     this.modelName = this.$route.snapshot.data.modelName;
     this.modelType = this.$route.snapshot.data.modelType;
     this.groupByCol = this.$route.snapshot.data.groupByCol;
-    this.displayedColumns = [...Object.keys(new this.modelType()).filter(e => !this.groupByCol || e != this.groupByCol), "edit"];
+    this.displayedColumns = [...Object.keys(new this.modelType())
+      .filter(e => !this.groupByCol || e != this.groupByCol),'actions'];
     this.$blockScreen.wrap(
       this.$rest
         .getItems(this.modelName)
@@ -51,10 +54,41 @@ export class ModelViewComponent<T extends Model> implements OnInit {
             _  => this.ngOnInit()
           ),
         err => this.$dialog.open(MessageComponent,
-          {data:{severity:Severity.ERROR, message: this.modelName + " wasn't updated successfully"}})
+          {data:{severity:Severity.ERROR, message: this.modelName + " wasn't updated successfully.\n" + err}})
+      )
+    )
+  }
+
+  deleteRow(row: T){
+    console.log("delete " + row._id);
+    const dialogRef = this.$dialog.open(AreYouSureComponent, {data: {action: "delete " + this.modelName}});
+    dialogRef.afterClosed().subscribe(ans => ans &&
+      this.$rest.deleteItem(this.modelName, row._id).subscribe(
+        res => this.$dialog.open(MessageComponent,
+          {data:{severity:Severity.FINE, message: this.modelName + " was deleted successfully"}}).afterClosed()
+          .subscribe(
+            _  => this.ngOnInit()
+          ),
+        err => this.$dialog.open(MessageComponent,
+          {data:{severity:Severity.ERROR, message: this.modelName + " wasn't deleted successfully.\n" + err}})
       )
     )
   }
 
 
+  addItem() {
+    console.log("add " + this.modelName);
+    const editorRef = this.$dialog.open(EditModelComponent, {data: new this.modelType()});
+    editorRef.afterClosed().subscribe(newRow => newRow &&
+      this.$rest.postItem(this.modelName, newRow).subscribe(
+        res => this.$dialog.open(MessageComponent,
+          {data:{severity:Severity.FINE, message: this.modelName + " was created successfully"}}).afterClosed()
+          .subscribe(
+            _  => this.ngOnInit()
+          ),
+        err => this.$dialog.open(MessageComponent,
+          {data:{severity:Severity.ERROR, message: this.modelName + " wasn't created successfully.\n" + err}})
+      )
+    )
+  }
 }

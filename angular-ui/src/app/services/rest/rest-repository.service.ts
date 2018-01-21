@@ -31,4 +31,13 @@ export class RestRepositoryService {
       .put(`${BASE}/${type}/${data._id}`,data,{withCredentials: true})
   }
 
+  deleteItem(type: string, id: string): Observable<any> {
+    return this.http
+      .delete(`${BASE}/${type}/${id}`,{withCredentials: true})
+  }
+
+  postItem(type: string, data: any) {
+    return this.http
+      .post(`${BASE}/${type}`,data,{withCredentials: true})
+  }
 }
