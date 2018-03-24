@@ -1,8 +1,0 @@
-[
-  {"title": "Home", "msgId": "home", "link": "/home", "accessAll" : true},
-  {"title": "Flowers Catalog", "msgId": "flowers_catalog", "link": "/flowers", "loggedInOnly": true},
-  {"title": "Users Management", "msgId": "users_management", "link": "/users", "managerOnly" : true, "employeeOnly": true},
-  {"title": "Branches Management", "msgId": "branches_management", "link": "/branches", "managerOnly": true},
-  {"title": "About Company", "msgId": "about_company", "link": "/about", "accessAll" : true},
-  {"title": "Contact", "msgId": "contact", "link": "/contact", "accessAll" : true}
-]

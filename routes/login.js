@@ -6,16 +6,15 @@ const db = require('../model/database');
 
 passport.use('local-signin', new LocalStrategy(
     {passReqToCallback : true}, //allows us to pass back the request to the callback
-    function(req, username, password, done) {
+    (req, email, password, done) => {
         db.getEntities("User")
-            .where('username').equals(username)
+            .where('email').equals(email)
             .where('password').equals(password)
-            .exec(
-            function (err,users) {
+            .exec(function (err, users) {
                 const user = users[0];
                 if (user) {
-                    console.log("LOGGED IN AS: " + user.username);
-                    req.session.success = 'You are successfully logged in ' + user.username + '!';
+                    console.log("LOGGED IN AS: " + user.email);
+                    req.session.success = 'You are successfully logged in ' + user.email + '!';
                     done(null, user);
                 }
                 if (!user) {
@@ -23,15 +22,12 @@ passport.use('local-signin', new LocalStrategy(
                     req.session.error = 'Could not log user in. Please try again.'; //inform user could not log them in
                     done(null, user);
                 }
-            }
-        );
-
-
+            });
     }
 ));
 
 passport.serializeUser(function(user, done) {
-    console.log("serializing " + user.username);
+    console.log("serializing " + user.email);
     if (user.toObject instanceof Function) {
         done(null, user.toObject());
     }else{
@@ -46,9 +42,9 @@ passport.deserializeUser(function(obj, done) {
 });
 
 /* GET login page. */
-router.get('/', function(req, res, next) {
-    res.render('login');
-});
+// router.get('/', function(req, res, next) {
+//     res.render('login');
+// });
 
 //TODO not working for now (should use passport-remember-me)
 function handleRemeberMe(req, res, next) {
@@ -71,14 +67,14 @@ router.post('/login', function(req, res, next) {
         }
         req.logIn(user, function (err) {
             if (err) { return next(err); }
-            return res.json({userRole: user.role});
+            return res.json({userRole: user.role, user: user});
         });
     })(req, res, next);
 });
 
 //logs user out of site, deleting them from the session, and returns to homepage
 router.get('/logout', function(req, res) {
-    const name = req.user.username;
+    const name = req.user.email;
     console.log("LOGGIN OUT " + name);
     req.logout();
     res.redirect('/');
@@ -99,6 +95,6 @@ router.loggedIn = function(req, res, next) {
     } else {
         res.redirect('/login');
     }
-}
+};
 
 module.exports = router;

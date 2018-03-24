@@ -1,8 +1,62 @@
 const mongoose = require("mongoose");
 
-const BranchSchema = require("../model/BranchSchema");
-const UserSchema = require("../model/UserSchema");
-const FlowerSchema = require("../model/FlowerSchema");
+
+/////////////////////////
+// Schemas
+/////////////////////////
+
+const SchemaMaker = require('./SchemaMaker');
+const Schema = mongoose.Schema;
+
+/**
+ * Create a validation object for `validate` property of the Schema.
+ * @param propertyName The name of the property for the error message.
+ * @param predicate The predicate determines the legallity of the value.
+ * @return {{validator: Function, message: string}}
+ */
+function vaidator(propertyName, predicate) {
+    return {
+        validator: predicate,
+        message: "{VALUE} is not a legal " + propertyName + "."
+    };
+}
+
+function isInteger(x) {
+    return true // TODO
+}
+
+const UserSchema = SchemaMaker({
+    email: {type: String, required: true, unique: true},
+    password: {type: String, required: true},
+    role: {type: String, required: true, validate: vaidator("role", x => /^OPERATOR|PLAYER$/.test(x)) },
+    firstName: {type: String, required: true},
+    lastName: {type: String, required: true},
+    address: {type: Object, required: true},
+    roomId: {type: Schema.Types.ObjectId, required: false}
+});
+
+const RoomSchema = SchemaMaker({
+    name: {type: String, required: true },
+    description: {type: String, required: true },
+    imageUrl: {type: String, required: true },
+    address: {type: Object, required: true },
+    difficulty: {type: Number, required: true, validate: vaidator("difficulty", x => isInteger(x) && x >= 1 && x <= 5) },
+});
+
+const Participation = SchemaMaker({
+    playerId: {type: "ObjectId", required: true },
+    roomId: {type: "ObjectId", required: true },
+    datetime: {type: String, required: true },
+    duration: {type: Number , required: true },// seconds
+    hints: {type: Number, required: true },
+    playerRank: {type: Number, required: true, validate: vaidator("playerRank", x => !x || isInteger(x) && x >= 1 && x <= 5) },
+});
+
+
+
+//////////////////////////
+// DB
+//////////////////////////
 
 const mongoDbUrl = "mongodb://flowerfly:hgyw1234@flowerfly-shard-00-00-ifale.mongodb.net:27017," +
     "flowerfly-shard-00-01-ifale.mongodb.net:27017," +
@@ -10,21 +64,20 @@ const mongoDbUrl = "mongodb://flowerfly:hgyw1234@flowerfly-shard-00-00-ifale.mon
 /**
  * TODO: Document the way it deals with super/sub-types (from the interface perspective).
  */
+
 mongoose.Promise = global.Promise;
+
 class Database {
 
-    constructor (dbName) {
+    constructor() {
         this.mongoDb = mongoose.createConnection(mongoDbUrl);
         this.entityCtorMap = {
-            Branch :    this.mongoDb.model('Branch',BranchSchema),
-            User :      this.mongoDb.model('User',  UserSchema),
-            Flower :    this.mongoDb.model('Flower',FlowerSchema)
+            User:          this.mongoDb.model('User', UserSchema),
+            Room:          this.mongoDb.model('Room', RoomSchema),
+            Participation: this.mongoDb.model('Flower', Participation)
         };
     }
 
-    get entityNames() {
-        return Object.keys(this.entityCtorMap); //TODO change to string
-    }
 
     /**
      * Get an entity by id.
@@ -49,7 +102,7 @@ class Database {
      * Add an entity to this database.
      * @param {string} entityName The name of the entity type.
      * @param params
-     * @returns {Promise}
+     * @returns {Promise} of the newly created entity
      */
     addEntity(entityName, params) {
         const entityCtor = this.mongoDb.model(entityName);
@@ -96,6 +149,7 @@ process.on('SIGINT', function() {
         process.exit(0);
     });
 });
+
 const db = new Database();
 
 
