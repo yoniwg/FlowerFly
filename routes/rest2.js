@@ -23,7 +23,7 @@ function newStatusError(status, message, cause) {
 }
 
 /**
- * TODO
+ * TODO documentation
  * @param asyncHandler
  * @return {function(*=, *=, *=)}
  */
