@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const db = require('../model/database');
 
+
 ////////////////////////
 // Utils
 ////////////////////////
@@ -26,7 +27,7 @@ function newStatusError(status, message, cause) {
  * @param asyncHandler
  * @return {function(*=, *=, *=)}
  */
-function asyncHandler(asyncHandler) {
+function asyncMiddleware(asyncHandler) {
     return (req, res, next) => {
         asyncHandler(req, res, next).then(json => res.json(json)).catch(next)
     }
@@ -37,13 +38,45 @@ function idEquals(a,b) {
 }
 
 
+function readAll(readStream) {
+    return new Promise(function(resolve,reject) {
+        const buffers = [];
+        readStream.on('data', (buf)=>{
+            buffers.push(buf);
+        });
+        readStream.on('end', ()=>{
+            const data = Buffer.concat(buffers);
+            resolve(data);
+        });
+        readStream.on('error', reject);
+    });
+}
+
+
+
 ///////////////////////
 // Routes
 ///////////////////////
 
+
+// image files
+
+router.get('/images/:id', function (req, res) {
+    const id = req.params.id;
+    db.getEntity("Image", id).then(image =>{
+        res.writeHead(200,{
+            'Content-Type': "image/jpeg",
+            'Content-Length': image.bytes.length
+        });
+        res.end(image.bytes)
+    });
+
+});
+
 // Registration
 
-router.post('/registration', asyncHandler(async req => {
+
+router.post('/registration', asyncMiddleware(async req => {
 
     const requirePropertyDefined = function(name, value) {
         if (!value) throw newStatusError(400, "request object is missing property '" + name +  "'.");
@@ -51,15 +84,25 @@ router.post('/registration', asyncHandler(async req => {
     };
 
     const requestJson = req.body;
-    // add room if needed
-    const user = requirePropertyDefined("player", requestJson.user);
-    const role = requirePropertyDefined("player.role", user.role);
+
+
+    const user = JSON.parse(requirePropertyDefined("user", requestJson.user));
     let roomId;
+
+    // add room if needed
+    const role = requirePropertyDefined("player.role", user.role);
     if (role === "OPERATOR") {
-        const room = requirePropertyDefined("room", requestJson.room);
-        const createdRoom = db.addEntity("Room", room);
+        const room = JSON.parse(requirePropertyDefined("room", requestJson.room));
+
+        // add image
+        const buffer = await readAll(req.files.image);
+        const newImage = await db.addEntity("Image", { bytes: buffer });
+        const newImageId = newImage._id;
+        room.imageUrl = newImageId;
+        const createdRoom = await db.addEntity("Room", room);
         roomId = createdRoom._id;
     }
+
 
     // add the user
     user.roomId = roomId;
@@ -69,36 +112,9 @@ router.post('/registration', asyncHandler(async req => {
 }));
 
 
-// Registration
-
-router.post('/registration', asyncHandler(async req => {
-
-    const requirePropertyDefined = function(name, value) {
-        if (!value) throw newStatusError(400, "request object is missing property '" + name +  "'.");
-        return value;
-    };
-
-    const reqObject = req.body;
-    // add room if needed
-    const user = requirePropertyDefined("player", reqObject.user);
-    const role = requirePropertyDefined("player.role", user.role);
-    let roomId;
-    if (role === "OPERATOR") {
-        const room = requirePropertyDefined("room", reqObject.room);
-        const createdRoom = db.addEntity("Room", room);
-        roomId = createdRoom._id;
-    }
-
-    // add the user
-    user.roomId = roomId;
-    const createdUser = await db.addEntity("User", user);
-    return {userId: createdUser._id, user: createdUser}
-
-}));
-
 // Get Likes Count
 
-router.get('/Post/:postId/Like/User/:userId', asyncHandler(async req => {
+router.get('/Post/:postId/Like/User/:userId', asyncMiddleware(async req => {
     const postId = req.params.postId;
     const userId = req.params.userId;
     const post = await db.getEntity("Post", postId);
@@ -108,7 +124,7 @@ router.get('/Post/:postId/Like/User/:userId', asyncHandler(async req => {
 
 
 // Sign In
-router.post('/sign-in', asyncHandler(async req => {
+router.post('/sign-in', asyncMiddleware(async req => {
     const reqObject = req.body;
     const email = req.email;
     const password = req.password;
@@ -119,7 +135,7 @@ router.post('/sign-in', asyncHandler(async req => {
 }));
 
 
-router.get("Room/:id/Participation", asyncHandler(async req => {
+router.get("Room/:id/Participation", asyncMiddleware(async req => {
     const id = req.params.id;
     const entities = await db.getEntities("Participation");
     const items = entities.filter(p => idEquals(p.roomId, id));
@@ -127,7 +143,7 @@ router.get("Room/:id/Participation", asyncHandler(async req => {
 }));
 
 
-router.get("Room/:rid/Participation/Player/:pid", asyncHandler(async req => {
+router.get("Room/:rid/Participation/Player/:pid", asyncMiddleware(async req => {
     const rid = req.params.rid;
     const pid = req.params.pid;
     const entities = await db.getEntities("Participation");
@@ -140,7 +156,7 @@ router.get("Room/:rid/Participation/Player/:pid", asyncHandler(async req => {
 
 const entityTypeBaseRegex = '/:entityType(' + db.entityNames.reduce((a,b) => a + '|' + b)+ ')';
 
-router.get(entityTypeBaseRegex, asyncHandler(async req => {
+router.get(entityTypeBaseRegex, asyncMiddleware(async req => {
     const entityType = req.params.entityType;
     const items = await db.getEntities(entityType);
     return{ items: items }
@@ -150,7 +166,7 @@ router.get(entityTypeBaseRegex, asyncHandler(async req => {
 
 // GET BY ID
 
-router.get(entityTypeBaseRegex +'/:id', asyncHandler(async req => {
+router.get(entityTypeBaseRegex +'/:id', asyncMiddleware(async req => {
     const id = req.params.id;
     const entityType = req.params.entityType;
     const item = await db.getEntity(entityType, id);
@@ -165,7 +181,7 @@ router.get(entityTypeBaseRegex +'/:id', asyncHandler(async req => {
 
 // DELETE
 
-router.delete(entityTypeBaseRegex + '/:id', asyncHandler(async req => {
+router.delete(entityTypeBaseRegex + '/:id', asyncMiddleware(async req => {
     const id = req.params.id;
     const entity = req.params.entityType;
     await db.deleteEntity(entity, id);
@@ -175,7 +191,7 @@ router.delete(entityTypeBaseRegex + '/:id', asyncHandler(async req => {
 
 // CREATE
 
-router.post(entityTypeBaseRegex, asyncHandler(async req => {
+router.post(entityTypeBaseRegex, asyncMiddleware(async req => {
     const entityType = req.params.entityType;
     const params = req.body;
 
@@ -187,7 +203,7 @@ router.post(entityTypeBaseRegex, asyncHandler(async req => {
 
 // UPDATE
 
-router.put(entityTypeBaseRegex + '/:id', asyncHandler(async req => {
+router.put(entityTypeBaseRegex + '/:id', asyncMiddleware(async req => {
     const id = req.params.id;
     const entityType = req.params.entityType;
 

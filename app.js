@@ -6,13 +6,17 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const passport = require('passport');
+const formData = require("express-form-data");
+const multipartyOptions = {
+    autoFiles: true
+};
+
 
 
 const app = express();
 const db = require('./model/database');
 
 // view engine setup
-// app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'html');
 
 // allow access control
@@ -23,16 +27,22 @@ app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Headers", "Origin, X-Auth-Token,Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
     next();
 });
-// app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
+// parse a data with connect-multiparty.
+app.use(formData.parse(multipartyOptions));
+// clear all empty files (size == 0)
+app.use(formData.format());
+// change file objects to node stream.Readable
+app.use(formData.stream());
+// union body and files
+app.use(formData.union());
 // app.use(express.static(path.join(__dirname, 'angular-ui/dist')));
 app.use(session({secret: 'supernova', saveUninitialized: true, resave: true}));
 app.use(passport.initialize());
 app.use(passport.session());
-// app.use(bodyParser.bodyParser());
 
 // const index = require('./routes/index');
 // var rest_x = require('./routes/rest_x');

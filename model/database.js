@@ -40,13 +40,13 @@ createSchema('User', {
     role: {type: String, required: true, validate: vaidator("role", x => /^OPERATOR|PLAYER$/.test(x)) },
     firstName: {type: String, required: true},
     lastName: {type: String, required: true},
-    address: {type: Object, required: false, validate: vaidator("address", x => x.street && x.number && x.city)},
+    address: {type: Object, required: true},
     roomId: {type: "ObjectId", required: false}
 });
 
 createSchema('Room', {
     name: {type: String, required: true },
-    description: {type: String, required: true },
+    description: {type: String, required: false },
     imageUrl: {type: String, required: true },
     address: {type: Object, required: true },
     difficulty: {type: Number, required: true, validate: vaidator("difficulty", x => isInteger(x) && x >= 1 && x <= 5) },
@@ -77,16 +77,19 @@ createSchema('Post', {
     dislikers: { type: ["ObjectId"], required: false },
 });
 
+createSchema('Image', {
+    bytes: { type: Buffer, required: true },
+});
+
 
 
 
 //////////////////////////
 // DB
 //////////////////////////
-
-const mongoDbUrl = "mongodb://flowerfly:hgyw1234@flowerfly-shard-00-00-ifale.mongodb.net:27017," +
-    "flowerfly-shard-00-01-ifale.mongodb.net:27017," +
-    "flowerfly-shard-00-02-ifale.mongodb.net:27017/test?ssl=true&replicaSet=flowerfly-shard-0&authSource=admin";
+const mongoDbUrl = "mongodb://admin:hgyw1234@runnerscluster-shard-00-00-7mx5t.mongodb.net:27017," +
+    "runnerscluster-shard-00-01-7mx5t.mongodb.net:27017," +
+    "runnerscluster-shard-00-02-7mx5t.mongodb.net:27017/test?ssl=true&replicaSet=RunnersCluster-shard-0&authSource=admin";
 /**
  * TODO: Document the way it deals with super/sub-types (from the interface perspective).
  */
