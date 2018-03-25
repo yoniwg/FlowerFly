@@ -7,6 +7,7 @@
 const app = require('../app');
 const debug = require('debug')('flowerfly:server');
 const http = require('http');
+const server = http.createServer(app);
 
 /**
  * Get port from environment and store in Express.
@@ -19,7 +20,6 @@ app.set('port', port);
  * Create HTTP server.
  */
 
-const server = http.createServer(app);
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -28,6 +28,9 @@ const server = http.createServer(app);
 server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
+
+const io = require('socket.io')(server);
+const socket = require('../routes/our-socket')(io);
 
 /**
  * Normalize a port into a number, string, or false.

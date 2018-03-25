@@ -21,6 +21,11 @@ function newStatusError(status, message, cause) {
     return err
 }
 
+/**
+ * TODO
+ * @param asyncHandler
+ * @return {function(*=, *=, *=)}
+ */
 function asyncHandler(asyncHandler) {
     return (req, res, next) => {
         asyncHandler(req, res, next).then(json => res.json(json)).catch(next)
@@ -91,6 +96,16 @@ router.post('/registration', asyncHandler(async req => {
 
 }));
 
+// Get Likes Count
+
+router.get('/Post/:postId/Like/User/:userId', asyncHandler(async req => {
+    const postId = req.params.postId;
+    const userId = req.params.userId;
+    const post = await db.getEntity("Post", postId);
+    const like = post.likers.includes(userId) ? 1 : post.dislikers.includes(userId) ? -1 : 0;
+    return { like: like }
+}));
+
 
 // Sign In
 router.post('/sign-in', asyncHandler(async req => {
@@ -106,7 +121,8 @@ router.post('/sign-in', asyncHandler(async req => {
 
 router.get("Room/:id/Participation", asyncHandler(async req => {
     const id = req.params.id;
-    const items = db.getEntities("Participation").filter(p => idEquals(p.roomId, id));
+    const entities = await db.getEntities("Participation");
+    const items = entities.filter(p => idEquals(p.roomId, id));
     return { items: items }
 }));
 
@@ -114,14 +130,15 @@ router.get("Room/:id/Participation", asyncHandler(async req => {
 router.get("Room/:rid/Participation/Player/:pid", asyncHandler(async req => {
     const rid = req.params.rid;
     const pid = req.params.pid;
-    const item = db.getEntities("Participation").find(p => idEquals(p.roomId, r_id) && idEquals(p.playerId, p));
+    const entities = await db.getEntities("Participation");
+    const item = entities.find(p => idEquals(p.roomId, r_id) && idEquals(p.playerId, p));
     return { item: item }
 }));
 
 
 // GET ALL
 
-const entityTypeBaseRegex = '/:entityType(Room|User|Participation)';
+const entityTypeBaseRegex = '/:entityType(' + db.entityNames.reduce((a,b) => a + '|' + b)+ ')';
 
 router.get(entityTypeBaseRegex, asyncHandler(async req => {
     const entityType = req.params.entityType;

@@ -6,7 +6,16 @@ const mongoose = require("mongoose");
 /////////////////////////
 
 const SchemaMaker = require('./SchemaMaker');
+
 const Schema = mongoose.Schema;
+
+const schemaMap = new Map();
+
+const createSchema = function(name, params) {
+    const schema = SchemaMaker(params);
+    schemaMap.set(name, schema);
+    return schema;
+};
 
 /**
  * Create a validation object for `validate` property of the Schema.
@@ -25,17 +34,17 @@ function isInteger(x) {
     return true // TODO
 }
 
-const UserSchema = SchemaMaker({
+createSchema('User', {
     email: {type: String, required: true, unique: true},
     password: {type: String, required: true},
     role: {type: String, required: true, validate: vaidator("role", x => /^OPERATOR|PLAYER$/.test(x)) },
     firstName: {type: String, required: true},
     lastName: {type: String, required: true},
-    address: {type: Object, required: true},
-    roomId: {type: Schema.Types.ObjectId, required: false}
+    address: {type: Object, required: false, validate: vaidator("address", x => x.street && x.number && x.city)},
+    roomId: {type: "ObjectId", required: false}
 });
 
-const RoomSchema = SchemaMaker({
+createSchema('Room', {
     name: {type: String, required: true },
     description: {type: String, required: true },
     imageUrl: {type: String, required: true },
@@ -43,7 +52,7 @@ const RoomSchema = SchemaMaker({
     difficulty: {type: Number, required: true, validate: vaidator("difficulty", x => isInteger(x) && x >= 1 && x <= 5) },
 });
 
-const Participation = SchemaMaker({
+createSchema('Participation', {
     playerId: {type: "ObjectId", required: true },
     roomId: {type: "ObjectId", required: true },
     datetime: {type: String, required: true },
@@ -51,6 +60,23 @@ const Participation = SchemaMaker({
     hints: {type: Number, required: true },
     playerRank: {type: Number, required: true, validate: vaidator("playerRank", x => !x || isInteger(x) && x >= 1 && x <= 5) },
 });
+
+
+createSchema('Group', {
+    name: { type: String, required: true },
+    managerId: { type: "ObjectId", required: true },
+    members: { type: ["ObjectId"], required: false }
+});
+
+createSchema('Post', {
+    datetime: { type: Date, required: true },
+    text: { type: String, required: true },
+    groupId: { type: "ObjectId", required: true },
+    userId: { type: "ObjectId", required: true },
+    likers: { type: ["ObjectId"], required: false },
+    dislikers: { type: ["ObjectId"], required: false },
+});
+
 
 
 
@@ -71,12 +97,13 @@ class Database {
 
     constructor() {
         this.mongoDb = mongoose.createConnection(mongoDbUrl);
-        this.entityCtorMap = {
-            User:          this.mongoDb.model('User', UserSchema),
-            Room:          this.mongoDb.model('Room', RoomSchema),
-            Participation: this.mongoDb.model('Flower', Participation)
-        };
+        schemaMap.forEach((schema, name) => {
+            this.mongoDb.model(name, schema);
+        });
+        this.entityNames = Array.from(schemaMap.keys());
+        this.ObjectId = mongoose.Types.ObjectId
     }
+
 
 
     /**
@@ -94,8 +121,13 @@ class Database {
      * @param {string} entityName the type name of the entity.
      * @returns {Array} array of all entities f the given type.
      */
-    getEntities(entityName) {
-        return this.mongoDb.model(entityName).find({isActive: true})
+    async getEntities(entityName) {
+        const docs = await this.mongoDb.model(entityName).find({isActive: true}).exec();
+        return docs.map(doc => JSON.parse(JSON.stringify(doc)));
+    };
+
+    getEntities0(entityName) {
+        return this.mongoDb.model(entityName).find({isActive: true});
     };
 
     /**

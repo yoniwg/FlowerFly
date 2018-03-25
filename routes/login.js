@@ -7,7 +7,7 @@ const db = require('../model/database');
 passport.use('local-signin', new LocalStrategy(
     {passReqToCallback : true}, //allows us to pass back the request to the callback
     (req, email, password, done) => {
-        db.getEntities("User")
+        db.getEntities0("User")
             .where('email').equals(email)
             .where('password').equals(password)
             .exec(function (err, users) {

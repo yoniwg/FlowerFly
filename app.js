@@ -38,7 +38,6 @@ app.use(passport.session());
 // var rest_x = require('./routes/rest_x');
 const rest2 = require('./routes/rest2');
 const login = require('./routes/login');
-const socket = require('./routes/our-socket')(app);
 // const partials = require('./routes/partials');
 
 // const messageSource = require('./i18n/i18n');
