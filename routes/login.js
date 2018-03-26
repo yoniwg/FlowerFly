@@ -5,7 +5,7 @@ const LocalStrategy = require('passport-local');
 const db = require('../model/database');
 
 passport.use('local-signin', new LocalStrategy(
-    {passReqToCallback : true}, //allows us to pass back the request to the callback
+    {passReqToCallback : true, usernameField:"email"}, //allows us to pass back the request to the callback
     (req, email, password, done) => {
         db.getEntities0("User")
             .where('email').equals(email)
@@ -58,16 +58,17 @@ function handleRemeberMe(req, res, next) {
 
 //sends the request through our local login/signin strategy, and if successful takes user to homepage, otherwise returns then to signin page
 router.post('/login', function(req, res, next) {
-    passport.authenticate('local-signin', function(error, user,a) {
+    passport.authenticate('local-signin', function(error, user, message) {
         if(error) {
             return res.status(500).json(error);
         }
         if(!user) {
-            return res.status(401).json(req.session.error);
+            return res.status(401).json((message)? message : req.session.error);
         }
         req.logIn(user, function (err) {
             if (err) { return next(err); }
-            return res.json({userRole: user.role});
+            user.password="";
+            return res.json(user);
         });
     })(req, res, next);
 });
@@ -81,9 +82,10 @@ router.get('/logout', function(req, res) {
     req.session.notice = "You have successfully been logged out " + name + "!";
 });
 
-router.get('/isLoggedIn',function (req, res, next) {
+router.get('/whoIsLoggedIn',function (req, res, next) {
     if (req.user) {
-        res.json({userRole: req.user.role});
+        req.user.password = "";
+        res.json(req.user);
     }else {
         res.json({})
     }

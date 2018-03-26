@@ -30,7 +30,7 @@ app.use(function(req, res, next) {
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cookieParser());
+app.use(cookieParser('supernova'));
 // parse a data with connect-multiparty.
 app.use(formData.parse(multipartyOptions));
 // clear all empty files (size == 0)
@@ -40,14 +40,16 @@ app.use(formData.stream());
 // union body and files
 app.use(formData.union());
 // app.use(express.static(path.join(__dirname, 'angular-ui/dist')));
-app.use(session({secret: 'supernova', saveUninitialized: true, resave: true}));
+app.use(session({secret: 'supernova', saveUninitialized: true, resave: true, cookie : {
+    expires: false
+}}));
 app.use(passport.initialize());
 app.use(passport.session());
 
+const login = require('./routes/login');
+const rest2 = require('./routes/rest2');
 // const index = require('./routes/index');
 // var rest_x = require('./routes/rest_x');
-const rest2 = require('./routes/rest2');
-const login = require('./routes/login');
 // const partials = require('./routes/partials');
 
 // const messageSource = require('./i18n/i18n');
@@ -59,8 +61,8 @@ const login = require('./routes/login');
 //     next();
 // });
 
-app.use('/login', login);
 // app.use('/rest', rest_x);
+app.use('/login', login);
 app.use('/rest2', rest2);
 
 /*
