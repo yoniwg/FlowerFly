@@ -26,22 +26,15 @@ const idEquals = function (a, b) {
  * @return Array the changed array. might be a new instance, or the old one changed.
  */
 const setIncludesIff = function (array, element, boolean, equals) {
-    if (!array) array = []
+    if (!array) array = [];
     array = array.map(x => x.toString());
     element = element.toString();
-    equals = equals || function (a, b) {
-        return a === b;
-    };
-    if (array.includes(element)) {
-        if (!boolean) {
-            // noinspection EqualityComparisonWithCoercionJS
-            return array.filter(e => !equals(e, element))
-        }
-    } else {
-        if (boolean) {
-            array.push(element)
-        }
+    if (boolean) {
+        array.push(element)
+    } else  {
+        array = array.filter(x => x !== element);
     }
+    array = [...new Set(array)];
     return array
 };
 
