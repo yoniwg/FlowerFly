@@ -26,6 +26,9 @@ const idEquals = function (a, b) {
  * @return Array the changed array. might be a new instance, or the old one changed.
  */
 const setIncludesIff = function (array, element, boolean, equals) {
+    if (!array) array = []
+    array = array.map(x => x.toString());
+    element = element.toString();
     equals = equals || function (a, b) {
         return a === b;
     };
@@ -36,7 +39,7 @@ const setIncludesIff = function (array, element, boolean, equals) {
         }
     } else {
         if (boolean) {
-            array.push(userId)
+            array.push(element)
         }
     }
     return array
@@ -48,6 +51,9 @@ const create = function(io) {
     const getPostRefreshObject = async function (groupId, clientId) {
         const entities = await db.getEntities("Post");
         const newPostList = entities.filter(p => idEquals(p.groupId, groupId));
+        for (const post of newPostList) {
+            // post.user = await db.getEntity("User", post.userId);
+        }
         return {
             name: "PostsRefresh",
             posts: newPostList
@@ -55,7 +61,7 @@ const create = function(io) {
     };
 
     const broadcastPosts = async function (groupId) {
-        const postsRefreshObject = await getPostRefreshObject(groupId);
+        let postsRefreshObject = await getPostRefreshObject(groupId);
         io.to(groupId).emit('chat', postsRefreshObject)
     };
 
@@ -72,7 +78,7 @@ const create = function(io) {
     };
 
     const onNewLike = async function(postId, userId, like) {
-        const post = db.getEntity("Post", postId);
+        const post = await db.getEntity("Post", postId);
 
         post.likers = setIncludesIff(post.likers, userId, like === 1, idEquals);
         post.dislikers = setIncludesIff(post.dislikers, userId, like === -1, idEquals);
@@ -93,7 +99,8 @@ const create = function(io) {
         };
 
         const checkParam = function(name, value) {
-            if (!value) throw new Error("missing parameter '" + name + "'")
+            // noinspection EqualityComparisonWithCoercionJS
+            if (value == undefined) throw new Error("missing parameter '" + name + "'")
             return value;
 
         };
@@ -112,7 +119,7 @@ const create = function(io) {
 
         const onAccept = function (event, action) {
             socket.on(event, (data) => {
-                console.log("our-socket: accept '" + event + "' - userId=" + userId  + " groupId=" + groupId + " data=" + data);
+                console.log("our-socket: accept '" + event + "' - userId=" + userId  + " groupId=" + groupId + " data=" + JSON.stringify(data));
                 const catchError = function (e) {
                     const error = new Error("error on event '" + event + "': " + e.message);
                     error.cause = e;

@@ -29,7 +29,7 @@ function newStatusError(status, message, cause) {
  */
 function asyncMiddleware(asyncHandler) {
     return (req, res, next) => {
-        asyncHandler(req, res, next).then(json => res.json(json)).catch(next)
+        asyncHandler(req, res, next).then(json => res.json(json || {})).catch(next)
     }
 }
 
@@ -59,23 +59,7 @@ function readAll(readStream) {
 ///////////////////////
 
 
-// image files
-
-router.get('/images/:id', function (req, res) {
-    const id = req.params.id;
-    db.getEntity("Image", id).then(image =>{
-        res.writeHead(200,{
-            'Content-Type': "image/jpeg",
-            'Content-Length': image.bytes.length
-        });
-        res.end(image.bytes)
-    });
-
-});
-
 // Registration
-
-
 router.post('/registration', asyncMiddleware(async req => {
 
     const requirePropertyDefined = function(name, value) {
@@ -111,18 +95,6 @@ router.post('/registration', asyncMiddleware(async req => {
     return {userId: newId, user: newEntity}
 }));
 
-
-// Get Likes Count
-
-router.get('/Post/:postId/Like/User/:userId', asyncMiddleware(async req => {
-    const postId = req.params.postId;
-    const userId = req.params.userId;
-    const post = await db.getEntity("Post", postId);
-    const like = post.likers.includes(userId) ? 1 : post.dislikers.includes(userId) ? -1 : 0;
-    return { like: like }
-}));
-
-
 // Sign In
 router.post('/sign-in', asyncMiddleware(async req => {
     const reqObject = req.body;
@@ -134,6 +106,39 @@ router.post('/sign-in', asyncMiddleware(async req => {
     return {userId: user._id, user: user}
 }));
 
+
+// image files
+router.get('/images/:id', function (req, res) {
+    const id = req.params.id;
+    db.getEntity("Image", id).then(image =>{
+        res.writeHead(200,{
+            'Content-Type': "image/jpeg",
+            'Content-Length': image.bytes.length
+        });
+        res.end(image.bytes)
+    });
+
+});
+
+// Get Like of user to a post -- redundant
+router.get('/Post/:postId/Like/User/:userId', asyncMiddleware(async req => {
+    const postId = req.params.postId;
+    const userId = req.params.userId;
+    const post = await db.getEntity("Post", postId);
+    const like = post.likers.includes(userId) ? 1 : post.dislikers.includes(userId) ? -1 : 0;
+    return { like: like }
+}));
+
+
+
+
+// get groups for a user
+router.get('/Groups/User/:id', asyncMiddleware(async req => {
+    const id = req.params.id;
+    const groups = await db.getEntities("Group");
+    const groupsOfUser = groups.filter(g => g.members.includes(id));
+    return { items: groupsOfUser }
+}));
 
 router.get("Room/:id/Participation", asyncMiddleware(async req => {
     const id = req.params.id;
